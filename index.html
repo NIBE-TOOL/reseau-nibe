@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -12,7 +13,6 @@
   .wrap{max-width:1100px;margin:22px auto;padding:18px}
   h1{font-size:24px;text-transform:uppercase;text-align:center;margin-bottom:20px}
 
-  /* Formulaire */
   form{border:1px solid var(--line);border-radius:12px;padding:0;background:#fff;overflow:hidden}
   fieldset{border:0;border-top:1px solid var(--line);margin:0;padding:12px 16px}
   fieldset:first-of-type{border-top:0}
@@ -23,7 +23,6 @@
   .field{display:flex;flex-direction:column}
   label{font-weight:600;font-size:13px;margin-bottom:6px}
   input,select{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff}
-  .hint{font-size:11px;color:var(--muted);margin-top:4px}
   .piece{border:1px dashed var(--line);border-radius:10px;padding:10px;margin-top:10px;background:#fff}
   .row{display:flex;gap:8px;align-items:center}
   .actions{display:flex;gap:10px;margin:12px 16px}
@@ -33,14 +32,12 @@
   form.zebra fieldset:nth-of-type(even){ background:var(--zebra) }
   form.zebra fieldset:nth-of-type(odd){ background:#fff }
 
-  /* Rapport */
   #rapport{display:none;margin-top:18px;border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff}
   .header{display:grid;grid-template-columns:1fr 1fr;gap:10px;color:var(--muted);font-size:var(--fs-small)}
   .header b{color:var(--text)}
   .header-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
   .rule{height:1px;background:var(--line);margin:10px 0 14px}
 
-  /* Tableaux */
   table{width:100%;border-collapse:collapse;font-size:var(--fs-body);margin-bottom:14px;table-layout:fixed}
   th,td{border:1px solid var(--line);padding:8px;vertical-align:top;text-align:center;line-height:1.25}
   th{background:#f6f8fb}
@@ -48,7 +45,6 @@
   .calc{font-size:var(--fs-justif);color:var(--muted);text-align:left;line-height:1.2}
   .sum{font-weight:700;background:#fbfdff}
 
-  /* Colonnes resserrées Débits/PDC + Détails large */
   #tabMain col.col-elt{width:28%}
   #tabMain col.col-qmin{width:11%}
   #tabMain col.col-qmax{width:12%}
@@ -56,15 +52,11 @@
   #tabMain col.col-pmax{width:11%}
   #tabMain col.col-det{width:27%}
 
-  /* Entrées d’air compact */
   .airTable{width:70%; margin:4px 0 0 auto; font-size:12px}
   .airTable th,.airTable td{padding:6px}
   .airTable th{background:#f9fbff}
-
-  /* Note de fin */
   .footnote{font-size:11px;color:var(--muted);margin-top:8px}
 
-  /* Compactage auto */
   #rapport.tight table{font-size:13px}
   #rapport.tight th,#rapport.tight td{padding:6px}
   #rapport.tight .calc{font-size:10.5px}
@@ -78,7 +70,6 @@
   #rapport.tight .rule{margin:8px 0 10px}
   #rapport.ultra .rule{margin:6px 0 8px}
 
-  /* Impression : uniquement le rapport */
   @media print{
     @page{ size: A4 landscape; margin: 8mm }
     .no-print{ display:none !important }
@@ -95,7 +86,6 @@
 
   <h1>Note de calcul réseau semi-rigide NIBE pour NIBE S735</h1>
 
-  <!-- === FORMULAIRE (zébré) === -->
   <form id="form" class="no-print zebra">
     <fieldset>
       <legend>Données administratives</legend>
@@ -123,30 +113,30 @@
 
     <fieldset>
       <legend>Type de logement</legend>
-      <div class="field" style="max-width:340px">
-        <label>Nombre de chambres</label>
-        <select id="nb_chambres">
-          <option value="1">1 chambre (T2)</option>
-          <option value="2">2 chambres (T3)</option>
-          <option value="3" selected>3 chambres (T4)</option>
-          <option value="4">4 chambres (T5)</option>
-          <option value="5">5 chambres (T6)</option>
-          <option value="6">6 chambres (T7)</option>
-          <option value="7">7 chambres et + (T7+)</option>
-        </select>
-      </div>
-      <div class="field" style="margin-top:12px;max-width:650px">
-        <label>Pièces principales supplémentaires</label>
-        <div id="pp_list"></div>
-        <div class="row" style="margin-top:6px">
-          <input id="pp_input" placeholder="ex : Bureau RDC" style="flex:1">
-          <button type="button" id="pp_add" class="ghost">+ Ajouter une pièce principale</button>
+      <div class="grid-2">
+        <div class="field" style="max-width:340px">
+          <label>Nombre de chambres</label>
+          <select id="nb_chambres">
+            <option value="1">1 chambre (T2)</option>
+            <option value="2">2 chambres (T3)</option>
+            <option value="3" selected>3 chambres (T4)</option>
+            <option value="4">4 chambres (T5)</option>
+            <option value="5">5 chambres (T6)</option>
+            <option value="6">6 chambres (T7)</option>
+            <option value="7">7 chambres et + (T7+)</option>
+          </select>
         </div>
-        <div class="hint">(bureau, salle de jeux, bibliothèque…)</div>
+        <div class="field">
+          <label>Pièces principales supplémentaires</label>
+          <div id="pp_list"></div>
+          <div class="actions" style="margin:6px 0 0 0">
+            <button type="button" id="pp_add" class="ghost">+ Ajouter une pièce principale</button>
+          </div>
+          <div class="hint">(bureau, salle de jeux, bibliothèque…)</div>
+        </div>
       </div>
     </fieldset>
 
-    <!-- A) Conduit principal — Aspiration PAC -->
     <fieldset>
       <legend>Conduit principal — Aspiration PAC</legend>
       <div class="grid-4">
@@ -156,10 +146,8 @@
         <div class="field"><label>Coudes 45°</label><input id="main_c45" type="number" value="0" min="0"></div>
         <div class="field"><label>Coudes 90°</label><input id="main_c90" type="number" value="2" min="0"></div>
       </div>
-      <!-- Détail calcul supprimé dans le FORMULAIRE -->
     </fieldset>
 
-    <!-- B) Pièces d’eau (Ø90) -->
     <fieldset>
       <legend>Pièces d’eau (conduits Ø90)</legend>
 
@@ -178,7 +166,6 @@
       </div>
     </fieldset>
 
-    <!-- C) Conduit de rejet & sortie -->
     <fieldset>
       <legend>Conduit de rejet & sortie</legend>
       <div class="grid-4">
@@ -196,7 +183,6 @@
           </select>
         </div>
       </div>
-      <!-- Détail calcul supprimé dans le FORMULAIRE -->
     </fieldset>
 
     <div class="actions">
@@ -204,7 +190,6 @@
     </div>
   </form>
 
-  <!-- === RAPPORT FINAL === -->
   <div id="rapport">
     <div class="header-bar">
       <button type="button" class="secondary printBtn" id="printBtn">Imprimer le rapport</button>
@@ -215,12 +200,7 @@
 
     <table id="tabMain">
       <colgroup>
-        <col class="col-elt"><!-- Élément -->
-        <col class="col-qmin"><!-- Débit mini -->
-        <col class="col-qmax"><!-- Grand débit cuisine -->
-        <col class="col-pmin"><!-- PDC mini -->
-        <col class="col-pmax"><!-- PDC grand -->
-        <col class="col-det"><!-- Détails -->
+        <col class="col-elt"><col class="col-qmin"><col class="col-qmax"><col class="col-pmin"><col class="col-pmax"><col class="col-det">
       </colgroup>
       <thead>
         <tr>
@@ -236,9 +216,7 @@
     </table>
 
     <table class="airTable" id="tabAir">
-      <thead>
-        <tr><th class="left">Entrées d’air</th><th>Débit (m³/h)</th></tr>
-      </thead>
+      <thead><tr><th class="left">Entrées d’air</th><th>Débit (m³/h)</th></tr></thead>
       <tbody id="r-air"></tbody>
     </table>
 
@@ -249,49 +227,30 @@
 </div>
 
 <script>
-/* ===== Données PDC — NIBE semi-rigide ===== */
-
-/* Bouches Ø90 */
-const P_BOUCHE_SIMPLE = { 15:1, 30:3 }; // Pa
+/* ===== Tables PDC (reprennent tes valeurs) ===== */
+const P_BOUCHE_SIMPLE = { 15:1, 30:3 };
 function pBoucheSimple(q){ return (Math.abs(q-15) <= Math.abs(q-30)) ? 1 : 3; }
-// Cuisine (double Ø90)
 const P_BOUCHE_CUISINE = { 30:1, 45:1, 90:3.5, 105:4, 120:5.5, 135:7 };
-function pBoucheCuisine(q){
-  const keys=[30,45,90,105,120,135]; let best=30, d=1e9;
-  keys.forEach(k=>{ const dd=Math.abs(q-k); if(dd<d){d=dd;best=k;} });
-  return P_BOUCHE_CUISINE[best];
-}
-// Conduits Ø90 : simple pour pièces, total (2 conduits) pour cuisine
+function pBoucheCuisine(q){ const keys=[30,45,90,105,120,135]; let best=30,d=1e9; keys.forEach(k=>{const dd=Math.abs(q-k); if(dd<d){d=dd;best=k;}}); return P_BOUCHE_CUISINE[best]; }
 const P_M_COND_SIMPLE = { 15:0.3, 30:1.0 };
 function pMCondSimple(q){ return (Math.abs(q-15)<=Math.abs(q-30))?0.3:1.0; }
 const P_M_CUISINE_TOTAL = { 30:2, 45:2, 90:7, 105:8, 120:12, 135:16 };
-function pMCuisineTot(q){
-  const keys=[30,45,90,105,120,135]; let best=30, d=1e9;
-  keys.forEach(k=>{ const dd=Math.abs(q-k); if(dd<d){d=dd;best=k;} });
-  return P_M_CUISINE_TOTAL[best];
-}
+function pMCuisineTot(q){ const keys=[30,45,90,105,120,135]; let best=30,d=1e9; keys.forEach(k=>{const dd=Math.abs(q-k); if(dd<d){d=dd;best=k;}}); return P_M_CUISINE_TOTAL[best]; }
 
-/* Principal & rejet Ø125/160/200 — linéiques et coudes 90° */
 const PER_M = {
-  125: {60:0.25,75:0.30,90:0.40,105:0.70,120:1.00,135:1.20,150:1.40,165:1.60},
-  160: {60:0.10,75:0.15,90:0.20,105:0.25,120:0.30,135:0.40,150:0.50,165:0.60,180:0.65,195:0.70,210:0.75,225:0.80,240:0.85,255:0.90,270:0.95,285:0.10},
-  200: {60:0.02,75:0.05,90:0.07,105:0.01,120:0.14,135:0.17,150:0.02,165:0.25,180:0.28,195:0.03,210:0.35,225:0.38,240:0.04,255:0.43,270:0.48,285:0.05,300:0.55,315:0.06,330:0.68,345:0.75,360:0.08,375:0.85,390:0.09,405:1.00}
+  125:{60:0.25,75:0.30,90:0.40,105:0.70,120:1.00,135:1.20,150:1.40,165:1.60},
+  160:{60:0.10,75:0.15,90:0.20,105:0.25,120:0.30,135:0.40,150:0.50,165:0.60,180:0.65,195:0.70,210:0.75,225:0.80,240:0.85,255:0.90,270:0.95,285:0.10},
+  200:{60:0.02,75:0.05,90:0.07,105:0.01,120:0.14,135:0.17,150:0.02,165:0.25,180:0.28,195:0.03,210:0.35,225:0.38,240:0.04,255:0.43,270:0.48,285:0.05,300:0.55,315:0.06,330:0.68,345:0.75,360:0.08,375:0.85,390:0.09,405:1.00}
 };
 const ELB90 = {
-  125: {60:1,75:1.7,90:2,105:2.3,120:3,135:4,150:5,165:6},
-  160: {60:0.5,75:0.7,90:0.8,105:1,120:1.3,135:1.6,150:2,165:2.3,180:2.6,195:3,210:3.5,225:4,240:4.2,255:5,270:5.5,285:6},
-  200: {60:0.1,75:0.2,90:0.3,105:0.4,120:0.5,135:0.6,150:0.65,165:0.75,180:0.85,195:0.92,210:1,225:1.2,240:1.5,255:1.65,270:1.8,285:2,300:1.2,315:2.4,330:2.8,345:3,360:3.2,375:3.6,390:3.8,405:4}
+  125:{60:1,75:1.7,90:2,105:2.3,120:3,135:4,150:5,165:6},
+  160:{60:0.5,75:0.7,90:0.8,105:1,120:1.3,135:1.6,150:2,165:2.3,180:2.6,195:3,210:3.5,225:4,240:4.2,255:5,270:5.5,285:6},
+  200:{60:0.1,75:0.2,90:0.3,105:0.4,120:0.5,135:0.6,150:0.65,165:0.75,180:0.85,195:0.92,210:1,225:1.2,240:1.5,255:1.65,270:1.8,285:2,300:1.2,315:2.4,330:2.8,345:3,360:3.2,375:3.6,390:3.8,405:4}
 };
-function nearestVal(table, Q){
-  const keys=Object.keys(table).map(Number).sort((a,b)=>a-b);
-  let best=keys[0], d=1e9;
-  keys.forEach(k=>{ const dd=Math.abs(Q-k); if(dd<d){d=dd;best=k;} });
-  return table[best];
-}
+function nearestVal(table, Q){ const keys=Object.keys(table).map(Number).sort((a,b)=>a-b); let best=keys[0],d=1e9; keys.forEach(k=>{const dd=Math.abs(Q-k); if(dd<d){d=dd;best=k;}}); return table[best]; }
 function perMeter(diam, Q){ return nearestVal(PER_M[diam]||{}, Q)||0; }
 function elbow90(diam, Q){ return nearestVal(ELB90[diam]||{}, Q)||0; }
 
-/* Sorties façade & toiture */
 const FAC_INOX = {
   125:{60:6,75:9,90:12,105:14,120:15,135:17,150:20,165:22},
   160:{60:4,75:5,90:8,105:9,120:10,135:12,150:15,165:16,180:19,195:22,210:23,225:24,240:25,255:26,270:30,285:35},
@@ -302,55 +261,45 @@ const FAC_DESIGN = {
   160:{60:5,75:5,90:10,105:10,120:10,135:15,150:15,165:15,180:20,195:20,210:25,225:25,240:30,255:35,270:40,285:55},
   200:{60:3,75:3,90:5,105:5,120:10,130:10,150:13,165:13,180:15,195:17,210:20,225:20,240:25,255:25,270:30,285:30,300:30,315:35,330:35,345:35,360:40,375:40,390:50,405:60}
 };
-function sortiePa(type, diam, Q){
-  if(type==='toiture'){ return 5; } // 5 Pa constant (Ø125/160)
-  const table = (type==='inox') ? FAC_INOX[diam] : FAC_DESIGN[diam];
-  if(!table) return 0;
-  return nearestVal(table, Q) || 0;
-}
+function sortiePa(type, diam, Q){ if(type==='toiture'){ return 5; } const table=(type==='inox')?FAC_INOX[diam]:FAC_DESIGN[diam]; if(!table) return 0; return nearestVal(table, Q)||0; }
 
-/* ===== Utils ===== */
+/* ====== Utils logement ====== */
 const $ = sel => document.querySelector(sel);
-function n(x){ return Number(x||0); }
-function cuisineDefaults(nb){
-  nb=Number(nb);
+function cuisineDefaults(nb){ nb=Number(nb);
   if (nb<=1) return {mini:30, grand:90};
   if (nb===2) return {mini:45, grand:105};
   if (nb===3) return {mini:45, grand:120};
   return {mini:45, grand:135};
 }
 function titreLogement(nb){
-  if (nb<=1) return 'T2';
-  if (nb===2) return 'T3';
-  if (nb===3) return 'T4';
-  if (nb===4) return 'T5';
-  if (nb===5) return 'T6';
-  return (nb>=7)?'T7+':'T7';
+  if (nb<=1) return 'T2'; if (nb===2) return 'T3'; if (nb===3) return 'T4';
+  if (nb===4) return 'T5'; if (nb===5) return 'T6'; return (nb>=7)?'T7+':'T7';
 }
 function debitFuite(type, nbCh){
-  const T = titreLogement(nbCh);
-  const valMaison = {T2:45,T3:60,T4:75,T5:90,T6:105,'T7':120,'T7+':120};
-  const valColl   = {T2:30,T3:40,T4:50,T5:60,T6:70,'T7':80,'T7+':80};
-  return (type==='maison' ? (valMaison[T]??0) : (valColl[T]??0));
+  const T=titreLogement(nbCh);
+  const maison={T2:45,T3:60,T4:75,T5:90,T6:105,'T7':120,'T7+':120};
+  const coll  ={T2:30,T3:40,T4:50,T5:60,T6:70,'T7':80,'T7+':80};
+  return type==='maison'?(maison[T]??0):(coll[T]??0);
 }
 
-/* ===== PP supplémentaires ===== */
-const ppListEl = $('#pp_list'), ppInput = $('#pp_input');
-$('#pp_add').addEventListener('click', ()=>{
-  const name = (ppInput.value||'').trim(); if(!name) return;
+/* ====== Pièces principales (UI) ====== */
+const ppListEl = $('#pp_list');
+function makePPRow(name='Pièce principale'){
   const row = document.createElement('div');
   row.className='row'; row.style.marginTop='6px';
   row.innerHTML = `<input class="pp_name" value="${name.replace(/"/g,'&quot;')}" style="flex:1">
                    <button type="button" class="ghost pp_remove">Supprimer</button>`;
   row.querySelector('.pp_remove').addEventListener('click', ()=> row.remove());
-  ppListEl.appendChild(row);
-  ppInput.value='';
+  return row;
+}
+document.getElementById('pp_add').addEventListener('click', ()=>{
+  ppListEl.appendChild(makePPRow('Bureau'));
 });
 function getPPNames(){
   return Array.from(document.querySelectorAll('#pp_list .pp_name')).map(i=>i.value.trim()).filter(Boolean);
 }
 
-/* ===== Entrées d’air ===== */
+/* ====== Entrées d’air ====== */
 function baseEntreesAir(nbCh, ppNames){
   const list=[];
   const qStd = (nbCh>=5) ? 22 : 30; // T6/T7+ => 22 ; sinon 30
@@ -363,7 +312,6 @@ function ajusterEntreesAir(liste, besoinMini){
   let note='', modif=false;
   const sum = () => liste.reduce((s,a)=>s+a.q,0);
   if (sum() < besoinMini){
-    // 1) chambres/PP 22 -> 30
     let changed=false;
     liste.forEach(a=>{
       if ((a.type==='ch' || a.type==='pp') && a.q===22){ a.q=30; changed=true; }
@@ -371,45 +319,106 @@ function ajusterEntreesAir(liste, besoinMini){
     if (changed){ note += 'Chambres/PP ajustées à 30 m³/h. '; modif=true; }
   }
   if (sum() < besoinMini){
-    // 2) séjour -> 90
     const sej = liste.find(a=>a.type==='sej');
     if (sej && sej.q<90){ sej.q=90; note += 'Séjour ajusté à 2×45=90 m³/h. '; modif=true; }
   }
-  const insuff = sum() < besoinMini;
-  return {liste, note: note.trim(), insuffisant: insuff, modif};
+  return {liste, note: note.trim(), insuffisant: (liste.reduce((s,a)=>s+a.q,0) < besoinMini), modif};
 }
 
-/* ===== UI Pièces d’eau (autres) ===== */
-$('#addPieceBtn').addEventListener('click', ()=>{
+/* ====== Pièces d’eau (UI + règles) ====== */
+function makePieceRow(defaultType='sdb'){
   const box=document.createElement('div'); box.className='piece';
   box.innerHTML=`
-    <strong>Pièce d'eau</strong>
-    <div class="grid-4" style="margin-top:8px">
-      <div class="field"><label>Nom</label><input name="nom" value="Salle de bain"></div>
-      <div class="field"><label>Débit (m³/h)</label><input name="q" type="number" value="30" min="0" step="1"></div>
+    <div class="grid-4">
+      <div class="field"><label>Nom</label><input name="nom" value="${defaultType==='wc'?'WC':(defaultType==='autre'?'Buanderie':'Salle de bain')}"></div>
+      <div class="field"><label>Type</label>
+        <select name="type">
+          <option value="sdb"${defaultType==='sdb'?' selected':''}>Douche / Salle de bain</option>
+          <option value="wc"${defaultType==='wc'?' selected':''}>WC</option>
+          <option value="autre"${defaultType==='autre'?' selected':''}>Buanderie / Cellier / Autre</option>
+        </select>
+      </div>
+      <div class="field"><label>Débit (m³/h)</label><input name="q" type="number" value="30" min="0" step="1" readonly></div>
       <div class="field"><label>Longueur Ø90 (m)</label><input name="len" type="number" value="5" min="0" step="0.1"></div>
     </div>
+    <div class="actions" style="margin-top:8px"><button type="button" class="ghost btnDel">Supprimer</button></div>
   `;
-  document.getElementById('pieces_autres').appendChild(box);
+  box.querySelector('.btnDel').addEventListener('click', ()=>{ box.remove(); applyPieceRules(); });
+  box.querySelector('select[name="type"]').addEventListener('change', ()=> applyPieceRules());
+  return box;
+}
+document.getElementById('addPieceBtn').addEventListener('click', ()=>{
+  document.getElementById('pieces_autres').appendChild(makePieceRow('sdb'));
+  applyPieceRules();
 });
 
-/* ===== Init défauts ===== */
-document.getElementById('date_etude').valueAsDate = new Date();
+/* Cuisine par défaut selon logement */
 const elNbCh=document.getElementById('nb_chambres');
 function applyCuisineDefaults(){
   const d=cuisineDefaults(elNbCh.value);
   document.getElementById('cui_q_min').value=d.mini;
   document.getElementById('cui_q_max').value=d.grand;
 }
-elNbCh.addEventListener('change', applyCuisineDefaults);
-applyCuisineDefaults();
+elNbCh.addEventListener('change', ()=>{ applyCuisineDefaults(); applyPieceRules(); });
 
-/* ===== Impression ===== */
+/* Règles de débit automatiques pièces d’eau */
+function applyPieceRules(){
+  const nbCh = Number(document.getElementById('nb_chambres').value);
+  const T = titreLogement(nbCh); // T2, T3, T4...
+  const pieces = Array.from(document.querySelectorAll('#pieces_autres .piece'));
+
+  // 1) base selon type — avec T2 spécifique (SDB = 15 par défaut)
+  pieces.forEach(p=>{
+    const type = p.querySelector('select[name="type"]').value;
+    const qEl = p.querySelector('input[name="q"]');
+    if (type==='sdb'){ qEl.value = (T==='T2'?15:30); }
+    else if (type==='autre'){ qEl.value = 15; }
+  });
+
+  // 2) règles WC
+  const wcs = pieces.filter(p=> p.querySelector('select[name="type"]').value==='wc');
+  if (T==='T2' || T==='T3'){
+    wcs.forEach(p=> p.querySelector('input[name="q"]').value = 15);
+  } else {
+    if (wcs.length<=1) wcs.forEach(p=> p.querySelector('input[name="q"]').value = 30);
+    else wcs.forEach(p=> p.querySelector('input[name="q"]').value = 15);
+  }
+
+  // 3) cas particulier T2 : mini global 60 — si <60, forcer UNE SDB à 30
+  if (T==='T2'){
+    let sum = Number(document.getElementById('cui_q_min').value)||0;
+    pieces.forEach(p=> sum += Number(p.querySelector('input[name="q"]').value)||0);
+    if (sum < 60){
+      const sdb = pieces.find(p=> p.querySelector('select[name="type"]').value==='sdb');
+      if (sdb){ sdb.querySelector('input[name="q"]').value = 30; }
+    }
+  }
+}
+
+/* Impression */
 document.getElementById('printBtn').addEventListener('click', ()=> window.print() );
 
-/* ===== Génération du rapport ===== */
+/* Fonctions calcul PDC principal/rejet */
+function pdcPrincipal(diam, len, c45, c90, Q){
+  const pm = perMeter(diam, Q);
+  const e90= elbow90(diam, Q);
+  const e45= e90/2;
+  return {p: pm*len + e45*c45 + e90*c90, pm, e90};
+}
+function pdcRejet(diam, len, c45, c90, Q, type){
+  const pm = perMeter(diam, Q);
+  const e90= elbow90(diam, Q);
+  const e45= e90/2;
+  const pout = sortiePa(type, diam, Q);
+  return {p: pm*len + e45*c45 + e90*c90 + pout, pm, e90, pout};
+}
+
+function n(x){ return Number(x||0); }
+
+/* Génération du rapport */
 document.getElementById('genBtn').addEventListener('click', ()=>{
-  // Admin
+  applyPieceRules();
+
   const batType = $('#bat_type').value;
   const inst =$('#inst_nom').value||'—';
   const siret=$('#inst_siret').value||'—';
@@ -421,45 +430,36 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
   const mailC=$('#client_email').value||'—';
   const addr =$('#client_adresse').value||'—';
 
-  // Logement
   const nbCh = Number($('#nb_chambres').value);
-  const ppNames = getPPNames();
-
-  // Principal — aspiration
   const main_d = Number($('#main_diam').value);
   const main_l = Number($('#main_len').value);
   const main_c45= Number($('#main_c45').value);
   const main_c90= Number($('#main_c90').value);
 
-  // Cuisine
   const cui_q_min= Number($('#cui_q_min').value);
   const cui_q_max= Number($('#cui_q_max').value);
-  const cui_len  = Number($('#cui_len').value); // par trajet
+  const cui_len  = Number($('#cui_len').value);
 
-  // Autres pièces d’eau
   const autres=Array.from(document.querySelectorAll('#pieces_autres .piece')).map(node=>({
     nom: node.querySelector('input[name="nom"]').value||'Pièce d’eau',
+    type: node.querySelector('select[name="type"]').value,
     q:   Number(node.querySelector('input[name="q"]').value),
     len: Number(node.querySelector('input[name="len"]').value),
   }));
 
-  // Rejet & sortie
   const rej_d = Number($('#rej_diam').value);
   const rej_l = Number($('#rej_len').value);
   const rej_c45= Number($('#rej_c45').value);
   const rej_c90= Number($('#rej_c90').value);
-  const rej_sortie=$('#rej_sortie').value; // inox | design | toiture
+  const rej_sortie=$('#rej_sortie').value;
 
-  /* === Débits totaux === */
   let sumQmini=cui_q_min, sumQgrand=cui_q_max;
   autres.forEach(p=>{ sumQmini+=p.q; sumQgrand+=p.q; });
 
-  /* === PDC Pièces d’eau === */
   let rows=[], sumPmin=0, sumPmax=0;
 
-  // Cuisine (double Ø90)
-  const pB_c_min = pBoucheCuisine(Math.min(cui_q_min,45)); // mini : 30/45 → 1 Pa
-  const pM_c_min = pMCuisineTot(Math.min(cui_q_min,45));   // → 2 Pa/m
+  const pB_c_min = pBoucheCuisine(Math.min(cui_q_min,45));
+  const pM_c_min = pMCuisineTot(Math.min(cui_q_min,45));
   const pCui_min = pB_c_min + pM_c_min * cui_len;
 
   const pB_c_max = pBoucheCuisine(cui_q_max);
@@ -471,7 +471,6 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
              det:`Bouche: ${pB_c_min.toFixed(1)} / ${pB_c_max.toFixed(1)} Pa ; Conduits: ${pM_c_min.toFixed(2)} / ${pM_c_max.toFixed(2)} Pa/m × ${cui_len} m`});
   sumPmin+=pCui_min; sumPmax+=pCui_max;
 
-  // Autres pièces (simple Ø90)
   autres.forEach(p=>{
     const pb = pBoucheSimple(p.q);
     const pm = pMCondSimple(p.q);
@@ -481,28 +480,13 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
     sumPmin+=pdc; sumPmax+=pdc;
   });
 
-  /* === Conduit principal — aspiration (fonction du débit) === */
-  function pdcPrincipal(diam, len, c45, c90, Q){
-    const pm = perMeter(diam, Q);
-    const e90= elbow90(diam, Q);
-    const e45= e90/2;
-    return pm*len + e45*c45 + e90*c90;
-  }
-  const pMain_min = pdcPrincipal(main_d, main_l, main_c45, main_c90, sumQmini);
-  const pMain_max = pdcPrincipal(main_d, main_l, main_c45, main_c90, sumQgrand);
+  const MAINmin = pdcPrincipal(main_d, main_l, main_c45, main_c90, sumQmini);
+  const MAINmax = pdcPrincipal(main_d, main_l, main_c45, main_c90, sumQgrand);
   rows.push({label:`Conduit principal aspiration Ø${main_d}`, qMin:sumQmini, qGrand:sumQgrand,
-             pMin:pMain_min, pMax:pMain_max,
-             det:`Lin: ${perMeter(main_d,sumQmini).toFixed(2)} / ${perMeter(main_d,sumQgrand).toFixed(2)} Pa/m × ${main_l} m ; 45°:${main_c45} ; 90°:${main_c90}`});
-  sumPmin+=pMain_min; sumPmax+=pMain_max;
+             pMin:MAINmin.p, pMax:MAINmax.p,
+             det:`Lin: ${MAINmin.pm.toFixed(2)} / ${MAINmax.pm.toFixed(2)} Pa/m × ${main_l} m ; 45°:${main_c45} ; 90°:${main_c90}`});
+  sumPmin+=MAINmin.p; sumPmax+=MAINmax.p;
 
-  /* === Conduit de rejet + sortie === */
-  function pdcRejet(diam, len, c45, c90, Q, type){
-    const pm = perMeter(diam, Q);
-    const e90= elbow90(diam, Q);
-    const e45= e90/2;
-    const pout = sortiePa(type, diam, Q);
-    return {p: pm*len + e45*c45 + e90*c90 + pout, pm, e90, pout};
-  }
   const RJmin = pdcRejet(rej_d, rej_l, rej_c45, rej_c90, sumQmini, rej_sortie);
   const RJmax = pdcRejet(rej_d, rej_l, rej_c45, rej_c90, sumQgrand, rej_sortie);
   const sortieLabel = (rej_sortie==='inox'?'Façade INOX':(rej_sortie==='design'?'Façade design':'Toiture isolée (5 Pa)'));
@@ -511,15 +495,13 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
              det:`Lin: ${RJmin.pm.toFixed(2)} / ${RJmax.pm.toFixed(2)} Pa/m × ${rej_l} m ; 45°:${rej_c45} ; 90°:${rej_c90} ; Sortie: ${RJmin.pout.toFixed(1)} / ${RJmax.pout.toFixed(1)} Pa`});
   sumPmin+=RJmin.p; sumPmax+=RJmax.p;
 
-  /* === ENTRÉES D’AIR : calcul + ajustements === */
-  let airList = baseEntreesAir(nbCh, ppNames);
+  let airList = baseEntreesAir(nbCh, getPPNames());
   const fuite = debitFuite(batType, nbCh);
   const besoinMini = sumQgrand - fuite;
   const aj = ajusterEntreesAir(airList, besoinMini);
   airList = aj.liste;
   const sumAir = airList.reduce((s,a)=>s+a.q,0);
 
-  /* === En-têtes rapport === */
   document.getElementById('r-head-1').innerHTML =
     `<div><b>Installateur :</b> ${inst} (${siret}) — ${mailI}</div>
      <div><b>Étude réalisée par :</b> ${audit}</div>`;
@@ -527,7 +509,6 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
     `<div><b>Client :</b> ${addr} — ${mailC}<br><b>Type de bâtiment :</b> ${batType==='maison'?'Maison individuelle':'Immeuble collectif'}</div>
      <div><b>Date :</b> ${date} — <b>Marques :</b> Bouches=${bB||'—'} ; Entrées d’air=${bE}</div>`;
 
-  /* === Remplir tableau principal === */
   const tbody=document.getElementById('r-rows'); tbody.innerHTML='';
   rows.forEach(r=>{
     const tr=document.createElement('tr');
@@ -540,8 +521,6 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
       <td class="calc">${r.det}</td>`;
     tbody.appendChild(tr);
   });
-
-  /* === Total (fin de tbody) === */
   const trTot = document.createElement('tr');
   trTot.className = 'sum';
   trTot.innerHTML = `
@@ -553,7 +532,6 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
     <td>${aj.modif ? `<span class="calc">Ajustements auto : ${aj.note}</span>` : ''}</td>`;
   tbody.appendChild(trTot);
 
-  /* === Entrées d’air === */
   const airBody=document.getElementById('r-air'); 
   airBody.innerHTML='';
   airList.forEach(a=>{
@@ -568,22 +546,22 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
   trFuite.innerHTML=`<td class="left"><span class="calc"><b>Débit de fuite</b> (m³/h)</span></td><td>${fuite.toFixed(0)}</td>`;
   airBody.appendChild(trFuite);
 
-  /* === Compactage auto (pour tenir sur 1 page) === */
   const r = document.getElementById('rapport');
   r.classList.remove('tight','ultra');
   const linesMain = rows.length + 1;
-  const linesAir  = airList.length + 2; // + total + fuite
+  const linesAir  = airList.length + 2;
   const totalLines = linesMain + Math.ceil(linesAir*0.7);
   if (totalLines > 24 && totalLines <= 32) r.classList.add('tight');
   if (totalLines > 32) r.classList.add('ultra');
 
-  /* === Afficher rapport === */
   r.style.display='block';
   r.scrollIntoView({behavior:'smooth',block:'start'});
 });
 
-/* Bouton Imprimer */
-document.getElementById('printBtn').addEventListener('click', ()=> window.print() );
+/* Init */
+document.getElementById('date_etude').valueAsDate = new Date();
+function init(){ applyCuisineDefaults(); applyPieceRules(); }
+init();
 </script>
 </body>
 </html>
