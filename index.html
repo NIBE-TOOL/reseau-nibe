@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -13,6 +12,7 @@
   .wrap{max-width:1100px;margin:22px auto;padding:18px}
   h1{font-size:24px;text-transform:uppercase;text-align:center;margin-bottom:20px}
 
+  /* Formulaire */
   form{border:1px solid var(--line);border-radius:12px;padding:0;background:#fff;overflow:hidden}
   fieldset{border:0;border-top:1px solid var(--line);margin:0;padding:12px 16px}
   fieldset:first-of-type{border-top:0}
@@ -32,6 +32,7 @@
   form.zebra fieldset:nth-of-type(even){ background:var(--zebra) }
   form.zebra fieldset:nth-of-type(odd){ background:#fff }
 
+  /* Rapport */
   #rapport{display:none;margin-top:18px;border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff}
   .header{display:grid;grid-template-columns:1fr 1fr;gap:10px;color:var(--muted);font-size:var(--fs-small)}
   .header b{color:var(--text)}
@@ -45,6 +46,7 @@
   .calc{font-size:var(--fs-justif);color:var(--muted);text-align:left;line-height:1.2}
   .sum{font-weight:700;background:#fbfdff}
 
+  /* Colonnes principales (resserré Débits/PDC / Détails large) */
   #tabMain col.col-elt{width:28%}
   #tabMain col.col-qmin{width:11%}
   #tabMain col.col-qmax{width:12%}
@@ -52,11 +54,14 @@
   #tabMain col.col-pmax{width:11%}
   #tabMain col.col-det{width:27%}
 
+  /* Entrées d’air compact */
   .airTable{width:70%; margin:4px 0 0 auto; font-size:12px}
   .airTable th,.airTable td{padding:6px}
   .airTable th{background:#f9fbff}
+
   .footnote{font-size:11px;color:var(--muted);margin-top:8px}
 
+  /* Compactage auto pour 1 page */
   #rapport.tight table{font-size:13px}
   #rapport.tight th,#rapport.tight td{padding:6px}
   #rapport.tight .calc{font-size:10.5px}
@@ -70,11 +75,12 @@
   #rapport.tight .rule{margin:8px 0 10px}
   #rapport.ultra .rule{margin:6px 0 8px}
 
+  /* Impression : uniquement le rapport */
   @media print{
     @page{ size: A4 landscape; margin: 8mm }
     .no-print{ display:none !important }
     .wrap{max-width:none;margin:0;padding:0}
-    #rapport{ display:block !important; border:0; border-radius:0; padding:6mm 6mm 5mm 6mm; margin:0 }
+    #rapport{ display:block !Important; border:0; border-radius:0; padding:6mm 6mm 5mm 6mm; margin:0 }
     #rapport .printBtn{ display:none !important }
     table{ page-break-inside:auto }
     tr,td,th{ page-break-inside:avoid; page-break-after:auto }
@@ -86,6 +92,7 @@
 
   <h1>Note de calcul réseau semi-rigide NIBE pour NIBE S735</h1>
 
+  <!-- === FORMULAIRE === -->
   <form id="form" class="no-print zebra">
     <fieldset>
       <legend>Données administratives</legend>
@@ -132,11 +139,12 @@
           <div class="actions" style="margin:6px 0 0 0">
             <button type="button" id="pp_add" class="ghost">+ Ajouter une pièce principale</button>
           </div>
-          <div class="hint">(bureau, salle de jeux, bibliothèque…)</div>
+          <div class="hint" style="font-size:12px;color:#6b7280">(bureau, salle de jeux, bibliothèque…)</div>
         </div>
       </div>
     </fieldset>
 
+    <!-- A) Conduit principal — Aspiration PAC -->
     <fieldset>
       <legend>Conduit principal — Aspiration PAC</legend>
       <div class="grid-4">
@@ -148,6 +156,7 @@
       </div>
     </fieldset>
 
+    <!-- B) Cuisine + pièces d’eau (Ø90) -->
     <fieldset>
       <legend>Pièces d’eau (conduits Ø90)</legend>
 
@@ -166,6 +175,7 @@
       </div>
     </fieldset>
 
+    <!-- C) Conduit de rejet & sortie -->
     <fieldset>
       <legend>Conduit de rejet & sortie</legend>
       <div class="grid-4">
@@ -190,6 +200,7 @@
     </div>
   </form>
 
+  <!-- === RAPPORT FINAL === -->
   <div id="rapport">
     <div class="header-bar">
       <button type="button" class="secondary printBtn" id="printBtn">Imprimer le rapport</button>
@@ -200,7 +211,12 @@
 
     <table id="tabMain">
       <colgroup>
-        <col class="col-elt"><col class="col-qmin"><col class="col-qmax"><col class="col-pmin"><col class="col-pmax"><col class="col-det">
+        <col class="col-elt">
+        <col class="col-qmin">
+        <col class="col-qmax">
+        <col class="col-pmin">
+        <col class="col-pmax">
+        <col class="col-det">
       </colgroup>
       <thead>
         <tr>
@@ -216,7 +232,9 @@
     </table>
 
     <table class="airTable" id="tabAir">
-      <thead><tr><th class="left">Entrées d’air</th><th>Débit (m³/h)</th></tr></thead>
+      <thead>
+        <tr><th class="left">Entrées d’air</th><th>Débit (m³/h)</th></tr>
+      </thead>
       <tbody id="r-air"></tbody>
     </table>
 
@@ -227,30 +245,50 @@
 </div>
 
 <script>
-/* ===== Tables PDC (reprennent tes valeurs) ===== */
-const P_BOUCHE_SIMPLE = { 15:1, 30:3 };
+/* ========= Tables PDC (tes valeurs) ========= */
+
+/* Bouches Ø90 */
+const P_BOUCHE_SIMPLE = { 15:1, 30:3 }; // Pa
 function pBoucheSimple(q){ return (Math.abs(q-15) <= Math.abs(q-30)) ? 1 : 3; }
+
+// Cuisine (double Ø90)
 const P_BOUCHE_CUISINE = { 30:1, 45:1, 90:3.5, 105:4, 120:5.5, 135:7 };
-function pBoucheCuisine(q){ const keys=[30,45,90,105,120,135]; let best=30,d=1e9; keys.forEach(k=>{const dd=Math.abs(q-k); if(dd<d){d=dd;best=k;}}); return P_BOUCHE_CUISINE[best]; }
+function pBoucheCuisine(q){
+  const keys=[30,45,90,105,120,135]; let best=30, d=1e9;
+  keys.forEach(k=>{ const dd=Math.abs(q-k); if(dd<d){d=dd;best=k;} });
+  return P_BOUCHE_CUISINE[best];
+}
+// Conduits Ø90 : simple pour pièces, total (2 conduits) pour cuisine
 const P_M_COND_SIMPLE = { 15:0.3, 30:1.0 };
 function pMCondSimple(q){ return (Math.abs(q-15)<=Math.abs(q-30))?0.3:1.0; }
 const P_M_CUISINE_TOTAL = { 30:2, 45:2, 90:7, 105:8, 120:12, 135:16 };
-function pMCuisineTot(q){ const keys=[30,45,90,105,120,135]; let best=30,d=1e9; keys.forEach(k=>{const dd=Math.abs(q-k); if(dd<d){d=dd;best=k;}}); return P_M_CUISINE_TOTAL[best]; }
+function pMCuisineTot(q){
+  const keys=[30,45,90,105,120,135]; let best=30, d=1e9;
+  keys.forEach(k=>{ const dd=Math.abs(q-k); if(dd<d){d=dd;best=k;} });
+  return P_M_CUISINE_TOTAL[best];
+}
 
+/* Principal & rejet Ø125/160/200 — linéiques et coudes 90° */
 const PER_M = {
-  125:{60:0.25,75:0.30,90:0.40,105:0.70,120:1.00,135:1.20,150:1.40,165:1.60},
-  160:{60:0.10,75:0.15,90:0.20,105:0.25,120:0.30,135:0.40,150:0.50,165:0.60,180:0.65,195:0.70,210:0.75,225:0.80,240:0.85,255:0.90,270:0.95,285:0.10},
-  200:{60:0.02,75:0.05,90:0.07,105:0.01,120:0.14,135:0.17,150:0.02,165:0.25,180:0.28,195:0.03,210:0.35,225:0.38,240:0.04,255:0.43,270:0.48,285:0.05,300:0.55,315:0.06,330:0.68,345:0.75,360:0.08,375:0.85,390:0.09,405:1.00}
+  125: {60:0.25,75:0.30,90:0.40,105:0.70,120:1.00,135:1.20,150:1.40,165:1.60},
+  160: {60:0.10,75:0.15,90:0.20,105:0.25,120:0.30,135:0.40,150:0.50,165:0.60,180:0.65,195:0.70,210:0.75,225:0.80,240:0.85,255:0.90,270:0.95,285:0.10},
+  200: {60:0.02,75:0.05,90:0.07,105:0.01,120:0.14,135:0.17,150:0.02,165:0.25,180:0.28,195:0.03,210:0.35,225:0.38,240:0.04,255:0.43,270:0.48,285:0.05,300:0.55,315:0.06,330:0.68,345:0.75,360:0.08,375:0.85,390:0.09,405:1.00}
 };
 const ELB90 = {
-  125:{60:1,75:1.7,90:2,105:2.3,120:3,135:4,150:5,165:6},
-  160:{60:0.5,75:0.7,90:0.8,105:1,120:1.3,135:1.6,150:2,165:2.3,180:2.6,195:3,210:3.5,225:4,240:4.2,255:5,270:5.5,285:6},
-  200:{60:0.1,75:0.2,90:0.3,105:0.4,120:0.5,135:0.6,150:0.65,165:0.75,180:0.85,195:0.92,210:1,225:1.2,240:1.5,255:1.65,270:1.8,285:2,300:1.2,315:2.4,330:2.8,345:3,360:3.2,375:3.6,390:3.8,405:4}
+  125: {60:1,75:1.7,90:2,105:2.3,120:3,135:4,150:5,165:6},
+  160: {60:0.5,75:0.7,90:0.8,105:1,120:1.3,135:1.6,150:2,165:2.3,180:2.6,195:3,210:3.5,225:4,240:4.2,255:5,270:5.5,285:6},
+  200: {60:0.1,75:0.2,90:0.3,105:0.4,120:0.5,135:0.6,150:0.65,165:0.75,180:0.85,195:0.92,210:1,225:1.2,240:1.5,255:1.65,270:1.8,285:2,300:1.2,315:2.4,330:2.8,345:3,360:3.2,375:3.6,390:3.8,405:4}
 };
-function nearestVal(table, Q){ const keys=Object.keys(table).map(Number).sort((a,b)=>a-b); let best=keys[0],d=1e9; keys.forEach(k=>{const dd=Math.abs(Q-k); if(dd<d){d=dd;best=k;}}); return table[best]; }
+function nearestVal(table, Q){
+  const keys=Object.keys(table).map(Number).sort((a,b)=>a-b);
+  let best=keys[0], d=1e9;
+  keys.forEach(k=>{ const dd=Math.abs(Q-k); if(dd<d){d=dd;best=k;} });
+  return table[best];
+}
 function perMeter(diam, Q){ return nearestVal(PER_M[diam]||{}, Q)||0; }
 function elbow90(diam, Q){ return nearestVal(ELB90[diam]||{}, Q)||0; }
 
+/* Sorties façade & toiture */
 const FAC_INOX = {
   125:{60:6,75:9,90:12,105:14,120:15,135:17,150:20,165:22},
   160:{60:4,75:5,90:8,105:9,120:10,135:12,150:15,165:16,180:19,195:22,210:23,225:24,240:25,255:26,270:30,285:35},
@@ -261,28 +299,38 @@ const FAC_DESIGN = {
   160:{60:5,75:5,90:10,105:10,120:10,135:15,150:15,165:15,180:20,195:20,210:25,225:25,240:30,255:35,270:40,285:55},
   200:{60:3,75:3,90:5,105:5,120:10,130:10,150:13,165:13,180:15,195:17,210:20,225:20,240:25,255:25,270:30,285:30,300:30,315:35,330:35,345:35,360:40,375:40,390:50,405:60}
 };
-function sortiePa(type, diam, Q){ if(type==='toiture'){ return 5; } const table=(type==='inox')?FAC_INOX[diam]:FAC_DESIGN[diam]; if(!table) return 0; return nearestVal(table, Q)||0; }
+function sortiePa(type, diam, Q){
+  if(type==='toiture'){ return 5; } // Ø125/160 — constant
+  const table = (type==='inox') ? FAC_INOX[diam] : FAC_DESIGN[diam];
+  if(!table) return 0;
+  return nearestVal(table, Q) || 0;
+}
 
-/* ====== Utils logement ====== */
+/* ========= Utils & Règles logement ========= */
 const $ = sel => document.querySelector(sel);
-function cuisineDefaults(nb){ nb=Number(nb);
+function cuisineDefaults(nb){
+  nb=Number(nb);
   if (nb<=1) return {mini:30, grand:90};
   if (nb===2) return {mini:45, grand:105};
   if (nb===3) return {mini:45, grand:120};
   return {mini:45, grand:135};
 }
 function titreLogement(nb){
-  if (nb<=1) return 'T2'; if (nb===2) return 'T3'; if (nb===3) return 'T4';
-  if (nb===4) return 'T5'; if (nb===5) return 'T6'; return (nb>=7)?'T7+':'T7';
+  if (nb<=1) return 'T2';
+  if (nb===2) return 'T3';
+  if (nb===3) return 'T4';
+  if (nb===4) return 'T5';
+  if (nb===5) return 'T6';
+  return (nb>=7)?'T7+':'T7';
 }
 function debitFuite(type, nbCh){
-  const T=titreLogement(nbCh);
-  const maison={T2:45,T3:60,T4:75,T5:90,T6:105,'T7':120,'T7+':120};
-  const coll  ={T2:30,T3:40,T4:50,T5:60,T6:70,'T7':80,'T7+':80};
-  return type==='maison'?(maison[T]??0):(coll[T]??0);
+  const T = titreLogement(nbCh);
+  const valMaison = {T2:45,T3:60,T4:75,T5:90,T6:105,'T7':120,'T7+':120};
+  const valColl   = {T2:30,T3:40,T4:50,T5:60,T6:70,'T7':80,'T7+':80};
+  return (type==='maison' ? (valMaison[T]??0) : (valColl[T]??0));
 }
 
-/* ====== Pièces principales (UI) ====== */
+/* ========= PP supplémentaires (entrées d’air) ========= */
 const ppListEl = $('#pp_list');
 function makePPRow(name='Pièce principale'){
   const row = document.createElement('div');
@@ -299,7 +347,7 @@ function getPPNames(){
   return Array.from(document.querySelectorAll('#pp_list .pp_name')).map(i=>i.value.trim()).filter(Boolean);
 }
 
-/* ====== Entrées d’air ====== */
+/* ========= Entrées d’air ========= */
 function baseEntreesAir(nbCh, ppNames){
   const list=[];
   const qStd = (nbCh>=5) ? 22 : 30; // T6/T7+ => 22 ; sinon 30
@@ -322,10 +370,11 @@ function ajusterEntreesAir(liste, besoinMini){
     const sej = liste.find(a=>a.type==='sej');
     if (sej && sej.q<90){ sej.q=90; note += 'Séjour ajusté à 2×45=90 m³/h. '; modif=true; }
   }
-  return {liste, note: note.trim(), insuffisant: (liste.reduce((s,a)=>s+a.q,0) < besoinMini), modif};
+  const insuff = sum() < besoinMini;
+  return {liste, note: note.trim(), insuffisant: insuff, modif};
 }
 
-/* ====== Pièces d’eau (UI + règles) ====== */
+/* ========= Pièces d’eau (UI + règles) ========= */
 function makePieceRow(defaultType='sdb'){
   const box=document.createElement('div'); box.className='piece';
   box.innerHTML=`
@@ -361,13 +410,13 @@ function applyCuisineDefaults(){
 }
 elNbCh.addEventListener('change', ()=>{ applyCuisineDefaults(); applyPieceRules(); });
 
-/* Règles de débit automatiques pièces d’eau */
+/* Règles de débit automatiques */
 function applyPieceRules(){
   const nbCh = Number(document.getElementById('nb_chambres').value);
   const T = titreLogement(nbCh); // T2, T3, T4...
   const pieces = Array.from(document.querySelectorAll('#pieces_autres .piece'));
 
-  // 1) base selon type — avec T2 spécifique (SDB = 15 par défaut)
+  // 1) base selon type
   pieces.forEach(p=>{
     const type = p.querySelector('select[name="type"]').value;
     const qEl = p.querySelector('input[name="q"]');
@@ -495,13 +544,15 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
              det:`Lin: ${RJmin.pm.toFixed(2)} / ${RJmax.pm.toFixed(2)} Pa/m × ${rej_l} m ; 45°:${rej_c45} ; 90°:${rej_c90} ; Sortie: ${RJmin.pout.toFixed(1)} / ${RJmax.pout.toFixed(1)} Pa`});
   sumPmin+=RJmin.p; sumPmax+=RJmax.p;
 
+  /* === ENTRÉES D’AIR (avec débit de fuite affiché) === */
   let airList = baseEntreesAir(nbCh, getPPNames());
-  const fuite = debitFuite(batType, nbCh);
-  const besoinMini = sumQgrand - fuite;
+  const fuite = debitFuite(batType, nbCh);               // <-- valeur affichée
+  const besoinMini = sumQgrand - fuite;                  // grand débit cuisine - débit de fuite
   const aj = ajusterEntreesAir(airList, besoinMini);
   airList = aj.liste;
   const sumAir = airList.reduce((s,a)=>s+a.q,0);
 
+  /* === En-têtes rapport === */
   document.getElementById('r-head-1').innerHTML =
     `<div><b>Installateur :</b> ${inst} (${siret}) — ${mailI}</div>
      <div><b>Étude réalisée par :</b> ${audit}</div>`;
@@ -509,6 +560,7 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
     `<div><b>Client :</b> ${addr} — ${mailC}<br><b>Type de bâtiment :</b> ${batType==='maison'?'Maison individuelle':'Immeuble collectif'}</div>
      <div><b>Date :</b> ${date} — <b>Marques :</b> Bouches=${bB||'—'} ; Entrées d’air=${bE}</div>`;
 
+  /* === Tableau principal === */
   const tbody=document.getElementById('r-rows'); tbody.innerHTML='';
   rows.forEach(r=>{
     const tr=document.createElement('tr');
@@ -532,6 +584,7 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
     <td>${aj.modif ? `<span class="calc">Ajustements auto : ${aj.note}</span>` : ''}</td>`;
   tbody.appendChild(trTot);
 
+  /* === Entrées d’air (avec ligne “Débit de fuite”) === */
   const airBody=document.getElementById('r-air'); 
   airBody.innerHTML='';
   airList.forEach(a=>{
@@ -542,14 +595,17 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
   trAirTot.className='sum';
   trAirTot.innerHTML=`<td class="left">Total entrées d’air</td><td>${sumAir.toFixed(0)}</td>`;
   airBody.appendChild(trAirTot);
+
+  /* >>> ICI : ligne débit de fuite (réapparue) <<< */
   const trFuite=document.createElement('tr');
   trFuite.innerHTML=`<td class="left"><span class="calc"><b>Débit de fuite</b> (m³/h)</span></td><td>${fuite.toFixed(0)}</td>`;
   airBody.appendChild(trFuite);
 
+  /* === Compactage auto page unique === */
   const r = document.getElementById('rapport');
   r.classList.remove('tight','ultra');
   const linesMain = rows.length + 1;
-  const linesAir  = airList.length + 2;
+  const linesAir  = airList.length + 2; // +2 pour total + fuite
   const totalLines = linesMain + Math.ceil(linesAir*0.7);
   if (totalLines > 24 && totalLines <= 32) r.classList.add('tight');
   if (totalLines > 32) r.classList.add('ultra');
@@ -558,9 +614,12 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
   r.scrollIntoView({behavior:'smooth',block:'start'});
 });
 
-/* Init */
+/* === Init === */
 document.getElementById('date_etude').valueAsDate = new Date();
-function init(){ applyCuisineDefaults(); applyPieceRules(); }
+function init(){ 
+  applyCuisineDefaults(); 
+  applyPieceRules(); 
+}
 init();
 </script>
 </body>
