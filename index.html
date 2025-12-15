@@ -7,13 +7,13 @@
 <style>
   :root{
     --line:#e3e7ee; --text:#1f2630; --muted:#5b6676; --accent:#1b6bd6;
-    --zebra:#f7f9fc; --fs-body:14px; --fs-small:12px; --fs-justif:11px;
+    --zebra:#f7f9fc;
   }
   *,*::before,*::after{box-sizing:border-box}
   html,body{margin:0;background:#fff;color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
   .wrap{max-width:1100px;margin:22px auto;padding:18px}
 
-  /* En-tête outil (logo plus à gauche, titre centré) */
+  /* En-tête outil */
   .app-header{
     display:grid;
     grid-template-columns:120px 1fr 120px;
@@ -39,8 +39,16 @@
   input,select{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#fff}
   input[readonly]{background:#f8fafc}
   input:disabled, select:disabled{background:#f4f6f9;color:#8893a2}
+
   .piece{border:1px dashed var(--line);border-radius:10px;padding:10px;margin-top:10px;background:#fff}
   .zebra .piece:nth-of-type(even){ background:var(--zebra) }
+
+  /* Couleurs par pièce (étape 4) */
+  .piece--cuisine{border:2px solid #111;background:rgba(0,0,0,0.03)}
+  .piece--sdb{border:2px solid #1b6bd6;background:rgba(27,107,214,0.06)}
+  .piece--wc{border:2px solid #2e7d32;background:rgba(46,125,50,0.06)}
+  .piece--autre{border:2px solid #7b1fa2;background:rgba(123,31,162,0.06)}
+
   .row{display:flex;gap:8px;align-items:center}
   .actions{display:flex;gap:10px;margin-top:12px}
   button{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:10px 12px;font-weight:700;cursor:pointer}
@@ -69,15 +77,44 @@
   .report-header-bar{
     display:grid;
     grid-template-columns:120px 1fr auto;
-    align-items:center;
-    gap:10px;
-    margin-bottom:6px;
+    align-items:start;
+    gap:12px;
+    margin-bottom:0;
   }
   .report-logo img{max-width:110px; height:auto}
-  .report-title{margin:0; font-size:18px; line-height:1.2}
-  .header{display:grid;grid-template-columns:1fr 1fr;gap:8px;color:var(--muted);font-size:11px}
+  .report-title-wrap{padding-top:2px}
+  .report-title{
+    margin:0;
+    font-size:20px;
+    line-height:1.15;
+    font-weight:800;
+  }
+  .report-sub{
+    margin-top:4px;
+    font-size:12px;
+    color:var(--muted);
+    font-weight:700;
+  }
+
+  /* Espace “admin” plus bas et plus aéré */
+  .report-meta{
+    margin-top:16px;
+  }
+  .header{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.35;
+  }
   .header b{color:var(--text)}
-  .rule{height:1px;background:var(--line);margin:6px 0 10px}
+  .rule{height:1px;background:var(--line);margin:14px 0 14px}
+
+  /* Espace avant le tableau “projet” */
+  .report-body{
+    margin-top:6px;
+  }
 
   .table-scroll{overflow-x:auto}
   table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:8px;table-layout:fixed}
@@ -94,7 +131,7 @@
   #tabMain col.col-pdcmax{width:10%}
   #tabMain col.col-det{width:18%}
 
-  .airTable{width:60%; margin:4px 0 0 auto; font-size:11px}
+  .airTable{width:60%; margin:6px 0 0 auto; font-size:11px}
   .airTable th,.airTable td{padding:5px}
   .airTable th{background:#f9fbff}
 
@@ -110,11 +147,10 @@
   .footnote{
     font-size:10px;
     color:#555;
-    margin-top:6px;
+    margin-top:10px;
     line-height:1.25;
   }
 
-  /* Responsive : smartphone / tablette */
   @media (max-width: 900px){
     .wrap{margin:12px auto;padding:12px}
     h1{font-size:18px}
@@ -125,18 +161,15 @@
     .grid-4,.grid-3,.grid-2{grid-template-columns:1fr}
     .nav{flex-direction:column; gap:10px; align-items:stretch}
     .actions{flex-direction:column; align-items:stretch}
+    .actions button,.nav button{width:100%}
 
-    /* ✅ FIX iPhone: ne pas mettre TOUS les boutons en 100% (ça écrase l'input "Bureau") */
-    .actions button,
-    .nav button{
-      width:100%;
-    }
+    /* Fix iPhone PP: input visible */
     .row input{min-width:0}
     .row button{width:auto}
 
     #rapport{max-width:none}
-    .report-header-bar{grid-template-columns:1fr; gap:6px}
-    .report-title{font-size:16px}
+    .report-header-bar{grid-template-columns:1fr; gap:8px}
+    .report-title{font-size:18px}
     .airTable{width:100%}
     .flow{font-size:15px}
   }
@@ -156,16 +189,12 @@
     #rapport th,#rapport td{padding:4px}
     #rapport .calc{font-size:9px}
     #rapport .header{font-size:10px}
-    #rapport .report-title{font-size:16px}
-    #rapport .rule{margin:5px 0 8px}
+    #rapport .report-title{font-size:18px}
+    #rapport .rule{margin:12px 0 12px}
     #rapport .printBtn{ display:none !important }
     table{ page-break-inside:avoid }
     tr,td,th{ page-break-inside:avoid; page-break-after:auto }
-
-    html, body{
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
+    html, body{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 </style>
 </head>
@@ -247,7 +276,9 @@
     </div>
     <div class="nav">
       <button class="secondary" type="button" onclick="showStep(1)">Retour</button>
-      <div class="actions"><button type="button" onclick="applyCuisineDefaults();applyT2MinimumRule();updateWCFlows();enforceT2Minimum60();refreshAllPieces('#pieces');showStep(3)">Continuer</button></div>
+      <div class="actions">
+        <button type="button" onclick="applyCuisineDefaults();applyT2MinimumRule();updateWCFlows();enforceT2Minimum60();refreshAllPieces('#pieces');showStep(3)">Continuer</button>
+      </div>
     </div>
   </div>
 
@@ -260,13 +291,19 @@
       <div class="field"><label>Diamètre (mm)</label>
         <select id="main_diam"><option>125</option><option>160</option><option>200</option></select>
       </div>
-      <div class="field"><label>Longueur droite (m)</label><input id="main_len" type="number" min="0" step="0.1" required placeholder="Ex : 6"></div>
-      <div class="field"><label>Coudes 45°</label><input id="main_c45" type="number" value="0" min="0"></div>
-      <div class="field"><label>Coudes 90°</label><input id="main_c90" type="number" value="2" min="0"></div>
+
+      <!-- ✅ entiers + défaut 0 + mètre par mètre -->
+      <div class="field"><label>Longueur droite (m)</label>
+        <input id="main_len" type="number" min="0" step="1" value="0" inputmode="numeric">
+      </div>
+
+      <!-- ✅ 90° à gauche / 45° à droite -->
+      <div class="field"><label>Coudes 90°</label><input id="main_c90" type="number" value="2" min="0" step="1" inputmode="numeric"></div>
+      <div class="field"><label>Coudes 45°</label><input id="main_c45" type="number" value="0" min="0" step="1" inputmode="numeric"></div>
     </div>
     <div class="nav">
       <button class="secondary" type="button" onclick="showStep(2)">Retour</button>
-      <div class="actions"><button type="button" onclick="showStep(4)">Continuer</button></div>
+      <div class="actions"><button type="button" onclick="goToStep4()">Continuer</button></div>
     </div>
   </div>
 
@@ -274,12 +311,17 @@
   <div class="card zebra" data-step="4" style="display:none">
     <h3>4) Pièces d’eau (Ø90 semi-rigide)</h3>
 
-    <div class="piece" id="piece_cuisine">
+    <!-- (Débits invisibles mais conservés pour le calcul) -->
+    <input id="cui_q_min" type="hidden">
+    <input id="cui_q_max" type="hidden">
+
+    <div class="piece piece--cuisine" id="piece_cuisine">
       <strong>CUISINE (2×Ø90)</strong>
-      <div class="grid-3" style="margin-top:8px">
-        <div class="field"><label>Débit mini (m³/h)</label><input id="cui_q_min" type="number" readonly></div>
-        <div class="field"><label>Grand débit cuisine (m³/h)</label><input id="cui_q_max" type="number" readonly></div>
-        <div class="field"><label>Longueur Ø90 (m – par gaine)</label><input id="cui_len" type="number" min="0" step="0.1" required placeholder="À renseigner"></div>
+      <div class="grid-2" style="margin-top:8px">
+        <div class="field"><label>Longueur Ø90 (m – par gaine)</label>
+          <input id="cui_len" type="number" min="0" step="1" value="0" inputmode="numeric">
+        </div>
+        <div class="field" aria-hidden="true"><label>&nbsp;</label><input type="text" readonly value=" " style="opacity:0"></div>
       </div>
     </div>
 
@@ -290,35 +332,35 @@
 
     <div class="nav">
       <button class="secondary" type="button" onclick="showStep(3)">Retour</button>
-      <div class="actions"><button type="button" onclick="showStep(5)">Continuer</button></div>
+      <div class="actions"><button type="button" onclick="goToStep5()">Continuer</button></div>
     </div>
   </div>
 
-  <!-- ÉTAPE 5 : REJET + SORTIE -->
+  <!-- ÉTAPE 5 : REJET -->
   <div class="card" data-step="5" style="display:none">
     <h3>5) Conduit de rejet</h3>
     <div class="flow">S735 <span class="arrow">➜</span> Extérieur</div>
 
     <div class="grid-4" style="margin-top:10px">
-      <div class="field"><label>Diamètre (mm)</label><select id="rej_diam"><option>125</option><option>160</option><option>200</option></select></div>
-      <div class="field"><label>Longueur droite (m)</label><input id="rej_len" type="number" min="0" step="0.1" required placeholder="Ex : 6"></div>
-      <div class="field"><label>Coudes 45°</label><input id="rej_c45" type="number" value="0" min="0"></div>
-      <div class="field"><label>Coudes 90°</label><input id="rej_c90" type="number" value="1" min="0"></div>
+      <div class="field"><label>Diamètre (mm)</label>
+        <select id="rej_diam" onchange="updateSortieTypeOptions()"><option>125</option><option>160</option><option>200</option></select>
+      </div>
+
+      <!-- ✅ entiers + défaut 0 + mètre par mètre -->
+      <div class="field"><label>Longueur droite (m)</label>
+        <input id="rej_len" type="number" min="0" step="1" value="0" inputmode="numeric">
+      </div>
+
+      <!-- ✅ 90° à gauche / 45° à droite -->
+      <div class="field"><label>Coudes 90°</label><input id="rej_c90" type="number" value="1" min="0" step="1" inputmode="numeric"></div>
+      <div class="field"><label>Coudes 45°</label><input id="rej_c45" type="number" value="0" min="0" step="1" inputmode="numeric"></div>
     </div>
 
     <div class="grid-2" style="margin-top:10px">
       <div class="field"><label>Type de sortie</label>
-        <select id="sortie_type" onchange="onSortieTypeChange()">
-          <option value="toiture">Toiture isolée (Ø125/160 → 5 Pa)</option>
-          <option value="facade_inox">Façade INOX</option>
-          <option value="facade_design">Façade Design</option>
-        </select>
+        <select id="sortie_type"></select>
       </div>
-      <div class="field"><label>Diamètre sortie</label>
-        <select id="sortie_diam">
-          <option>125</option><option>160</option><option>200</option>
-        </select>
-      </div>
+      <div class="field" aria-hidden="true"><label>&nbsp;</label><input type="text" readonly value=" " style="opacity:0"></div>
     </div>
 
     <div class="nav">
@@ -334,50 +376,59 @@
     <div class="report-logo">
       <img src="https://www.nibe.eu/images/18.6394f9d91836c36799c18b7/1716537072922/nibe-logo-web.svg" alt="NIBE">
     </div>
-    <h2 class="report-title">Note de calcul – Réseau de ventilation (semi-rigide)</h2>
+
+    <div class="report-title-wrap">
+      <h2 class="report-title">Note de calcul – Réseau de ventilation (semi-rigide)</h2>
+      <div class="report-sub">NIBE S735</div>
+    </div>
+
     <button type="button" class="secondary printBtn no-print" onclick="window.print()">Imprimer</button>
   </div>
 
-  <div class="header" id="r-head-1"></div>
-  <div class="header" id="r-head-2" style="margin-top:4px"></div>
+  <div class="report-meta">
+    <div class="header" id="r-head-1"></div>
+    <div class="header" id="r-head-2" style="margin-top:8px"></div>
+  </div>
+
   <div class="rule"></div>
 
-  <div class="table-scroll">
-    <table id="tabMain">
-      <colgroup>
-        <col class="col-elt"><col class="col-qmin"><col class="col-qmax"><col class="col-pdcmin"><col class="col-pdcmax"><col class="col-det">
-      </colgroup>
-      <thead>
-        <tr>
-          <th class="left">Élément</th>
-          <th>Débit mini<br>(m³/h)</th>
-          <th>Grand débit cuisine<br>(m³/h)</th>
-          <th>PDC mini<br>(Pa)</th>
-          <th>PDC grand<br>(Pa)</th>
-          <th class="left">Détails calcul</th>
-        </tr>
-      </thead>
-      <tbody id="r-rows"></tbody>
-    </table>
-  </div>
+  <div class="report-body">
+    <div class="table-scroll">
+      <table id="tabMain">
+        <colgroup>
+          <col class="col-elt"><col class="col-qmin"><col class="col-qmax"><col class="col-pdcmin"><col class="col-pdcmax"><col class="col-det">
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="left">Élément</th>
+            <th>Débit mini<br>(m³/h)</th>
+            <th>Grand débit cuisine<br>(m³/h)</th>
+            <th>PDC mini<br>(Pa)</th>
+            <th>PDC grand<br>(Pa)</th>
+            <th class="left">Détails calcul</th>
+          </tr>
+        </thead>
+        <tbody id="r-rows"></tbody>
+      </table>
+    </div>
 
-  <div class="table-scroll">
-    <table class="airTable" id="tabAir">
-      <thead><tr><th class="left">Entrées d’air</th><th>Débit (m³/h)</th></tr></thead>
-      <tbody id="r-air"></tbody>
-    </table>
-  </div>
+    <div class="table-scroll">
+      <table class="airTable" id="tabAir">
+        <thead><tr><th class="left">Entrées d’air</th><th>Débit (m³/h)</th></tr></thead>
+        <tbody id="r-air"></tbody>
+      </table>
+    </div>
 
-  <div class="footnote">
-    Le présent document constitue une note de calcul indicative du réseau de ventilation.
-    Les pertes de charge sont établies à partir des données fabricants et des hypothèses renseignées.
-    <br>
-    Joindre au présent rapport le <b>schéma du réseau</b> et l’<b>implantation des bouches</b>.
+    <div class="footnote">
+      Le présent document constitue une note de calcul indicative du réseau de ventilation.
+      Les pertes de charge sont établies à partir des données fabricants et des hypothèses renseignées.
+      <br>
+      Joindre au présent rapport le <b>schéma du réseau</b> et l’<b>implantation des bouches</b>.
+    </div>
   </div>
 </div>
 
 <script>
-/* === Contrôle d’affichage du rapport : jamais visible avant l’étape 4 === */
 let reportGenerated = false;
 
 /* ========= Données PERTE de CHARGE – SEMI-RIGIDE ========= */
@@ -399,8 +450,6 @@ const MAIN_90 = {
   160: { 60:0.5,75:0.7,90:0.8,105:1,120:1.3,135:1.6,150:2,165:2.3,180:2.6,195:3,210:3.5,225:4,240:4.2,255:5,270:5.5,285:6 },
   200: { 60:0.1,75:0.2,90:0.3,105:0.4,120:0.5,135:0.6,150:0.65,165:0.75,180:0.85,195:0.92,210:1,225:1.2,240:1.5,255:1.65,270:1.8,285:2,300:2.2,315:2.4,330:2.8,345:3,360:3.2,375:3.6,390:3.8,405:4 }
 };
-function main45Pa(d,q){ return interpTable(MAIN_90[d],q)/2; }
-
 const SORTIE = {
   facade_inox: {
     125:{60:6,75:9,90:12,105:14,120:15,135:17,150:20,165:22},
@@ -444,7 +493,6 @@ function ajusterEntreesAir(liste, besoinMini){
   return {liste, note:note.trim(), modif};
 }
 
-/* ========= UI helpers ========= */
 const $=s=>document.querySelector(s); const $$=s=>Array.from(document.querySelectorAll(s));
 
 function showStep(n){
@@ -460,6 +508,66 @@ function showStep(n){
   }
 }
 
+/* ========= Entiers uniquement (pas de virgule) ========= */
+function coerceInt(el, {min=0}={}){
+  if(!el) return;
+  const raw = String(el.value ?? '').replace(',', '.');
+  let n = Math.round(Number(raw));
+  if(!Number.isFinite(n)) n = min;
+  if(n < min) n = min;
+  el.value = String(n);
+}
+function bindIntField(el, opts){
+  if(!el) return;
+  el.addEventListener('blur', ()=>coerceInt(el, opts));
+  el.addEventListener('change', ()=>coerceInt(el, opts));
+}
+function bindAllStaticIntFields(){
+  ['main_len','cui_len','rej_len','main_c90','main_c45','rej_c90','rej_c45'].forEach(id=>{
+    bindIntField($('#'+id), {min:0});
+  });
+}
+function bindPieceLenIntField(piece){
+  const lenEl = piece.querySelector('input[name="len"]');
+  bindIntField(lenEl, {min:0});
+}
+
+/* ========= Bloquants navigation (longueur > 0) ========= */
+function goToStep4(){
+  coerceInt($('#main_len'));
+  const v = Number($('#main_len').value);
+  if(!v || v<=0){
+    alert("Merci de renseigner une longueur > 0 m pour le conduit d’extraction (étape 3).");
+    return;
+  }
+  showStep(4);
+}
+function goToStep5(){
+  coerceInt($('#cui_len'));
+  const cuiLen = Number($('#cui_len').value);
+  if(!cuiLen || cuiLen<=0){
+    alert("Merci de renseigner une longueur > 0 m pour la cuisine (étape 4).");
+    return;
+  }
+  const pieces = Array.from(document.querySelectorAll('#pieces .piece'));
+  for(const p of pieces){
+    const type = p.querySelector('select[name="type"]')?.value || '';
+    const lenEl = p.querySelector('input[name="len"]');
+    coerceInt(lenEl);
+    const len = Number(lenEl?.value ?? 0);
+    if(!type){
+      alert("Une pièce d’eau est incomplète : merci de choisir le type (étape 4).");
+      return;
+    }
+    if(!len || len<=0){
+      alert("Une pièce d’eau est incomplète : merci de renseigner une longueur > 0 m (étape 4).");
+      return;
+    }
+  }
+  showStep(5);
+}
+
+/* ========= Pièces principales ========= */
 const ppListEl=$('#pp_list');
 function makePPRow(name='Pièce principale'){
   const row=document.createElement('div'); row.className='row'; row.style.marginTop='6px';
@@ -471,24 +579,42 @@ function makePPRow(name='Pièce principale'){
 function ppAdd(){ ppListEl.appendChild(makePPRow('Bureau')); }
 function getPPNames(){ return Array.from(document.querySelectorAll('#pp_list .pp_name')).map(i=>i.value.trim()).filter(Boolean); }
 
-/* ========= Pièces d'eau (Type d'abord) ========= */
+/* ========= Étape 4 (Type / Nom / Longueur) + couleurs ========= */
 function setPieceEnabled(piece, enabled){
   const nom = piece.querySelector('input[name="nom"]');
-  const q   = piece.querySelector('input[name="q"]');
   const len = piece.querySelector('input[name="len"]');
   nom.disabled = !enabled;
-  q.disabled   = !enabled;
   len.disabled = !enabled;
   if(!enabled){
     nom.value = '';
-    q.value   = '';
-    len.value = '';
+    len.value = '0';
+    piece.dataset.q = '';
   }
+}
+function nextIndexFor(type, currentPiece){
+  const base = (type==='sdb') ? 'Salle de bain' : 'WC';
+  let max = 0;
+  $$('#pieces .piece').forEach(p=>{
+    if(p === currentPiece) return;
+    const t = p.querySelector('select[name="type"]')?.value;
+    if(t !== type) return;
+    const name = (p.querySelector('input[name="nom"]')?.value || '').trim();
+    const m = name.match(new RegExp('^' + base.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '\\s+(\\d+)$'));
+    if(m) max = Math.max(max, parseInt(m[1],10));
+  });
+  return max + 1;
+}
+function applyPieceColor(piece, type){
+  piece.classList.remove('piece--sdb','piece--wc','piece--autre');
+  if(type==='sdb') piece.classList.add('piece--sdb');
+  else if(type==='wc') piece.classList.add('piece--wc');
+  else if(type==='autre') piece.classList.add('piece--autre');
 }
 function makePieceRow(){
   const box=document.createElement('div'); box.className='piece';
+  box.dataset.q = '';
   box.innerHTML=`
-    <div class="grid-4">
+    <div class="grid-3">
       <div class="field"><label>Type</label>
         <select name="type" onchange="onTypeChange(this)">
           <option value="" selected>— Choisir —</option>
@@ -500,17 +626,15 @@ function makePieceRow(){
       <div class="field"><label>Nom</label>
         <input name="nom" disabled placeholder="Auto après choix du type">
       </div>
-      <div class="field"><label>Débit (m³/h)</label>
-        <input name="q" type="number" readonly disabled>
-      </div>
       <div class="field"><label>Longueur Ø90 (m)</label>
-        <input name="len" type="number" min="0" step="0.1" required disabled placeholder="À renseigner">
+        <input name="len" type="number" min="0" step="1" value="0" inputmode="numeric" required disabled>
       </div>
     </div>
     <div class="actions" style="margin-top:8px">
       <button type="button" class="ghost" onclick="this.closest('.piece').remove(); applyT2MinimumRule(); updateWCFlows();">Supprimer</button>
     </div>`;
   setPieceEnabled(box, false);
+  bindPieceLenIntField(box);
   return box;
 }
 function addPiece(){
@@ -524,23 +648,40 @@ function onTypeChange(select){
   const type = select.value;
 
   if(!type){
+    applyPieceColor(piece, '');
     setPieceEnabled(piece, false);
     applyT2MinimumRule();
     updateWCFlows();
     return;
   }
 
+  applyPieceColor(piece, type);
   setPieceEnabled(piece, true);
 
   const nom = piece.querySelector('input[name="nom"]');
-  const q   = piece.querySelector('input[name="q"]');
 
-  const autoMap = { sdb:'Salle de bain', wc:'WC', autre:'Buanderie' };
-  const autoNames = new Set(Object.values(autoMap));
+  // Débit interne (non affiché)
+  const q = (type==='sdb') ? 30 : 15;
+  piece.dataset.q = String(q);
+
+  // Nommage auto
   const current = (nom.value || '').trim();
-  if(current==='' || autoNames.has(current)) nom.value = autoMap[type];
+  const isAuto =
+    /^Salle de bain\s+\d+$/.test(current) ||
+    /^WC\s+\d+$/.test(current) ||
+    current === 'Salle de bain' ||
+    current === 'WC' ||
+    current === 'Buanderie';
 
-  q.value = (type==='sdb') ? 30 : 15;
+  if(current === '' || isAuto){
+    if(type === 'sdb'){
+      nom.value = `Salle de bain ${nextIndexFor('sdb', piece)}`;
+    } else if(type === 'wc'){
+      nom.value = `WC ${nextIndexFor('wc', piece)}`;
+    } else {
+      nom.value = 'Buanderie';
+    }
+  }
 
   applyT2MinimumRule();
   updateWCFlows();
@@ -555,8 +696,10 @@ function onChambresChange(){
   refreshAllPieces('#pieces');
 }
 function applyCuisineDefaults(){
-  const nb=+($('#nb_chambres')?.value||3); const d=cuisineDefaults(nb);
-  $('#cui_q_min').value=d.mini; $('#cui_q_max').value=d.grand;
+  const nb=+($('#nb_chambres')?.value||3);
+  const d=cuisineDefaults(nb);
+  $('#cui_q_min').value=d.mini;
+  $('#cui_q_max').value=d.grand;
 }
 function applyT2MinimumRule(){
   const nbCh = +($('#nb_chambres')?.value || 3);
@@ -567,13 +710,9 @@ function applyT2MinimumRule(){
     .filter(p => (p.querySelector('select[name="type"]')?.value || '') !== '');
 
   if (pieces.length === 1){
-    const qEl = pieces[0].querySelector('input[name="q"]');
-    if (qEl) qEl.value = 30;
+    pieces[0].dataset.q = '30';
   } else if (pieces.length >= 2){
-    pieces.forEach(p=>{
-      const qEl = p.querySelector('input[name="q"]');
-      if (qEl) qEl.value = 15;
-    });
+    pieces.forEach(p=> p.dataset.q = '15');
   }
 }
 function updateWCFlows(){
@@ -585,12 +724,12 @@ function updateWCFlows(){
   if (wcPieces.length===0) return;
 
   if (T==='T2' || T==='T3'){
-    wcPieces.forEach(p=>{ p.querySelector('input[name="q"]').value = 15; });
+    wcPieces.forEach(p=> p.dataset.q = '15');
   } else {
     if (wcPieces.length===1){
-      wcPieces[0].querySelector('input[name="q"]').value = 30;
+      wcPieces[0].dataset.q = '30';
     } else {
-      wcPieces.forEach(p=>{ p.querySelector('input[name="q"]').value = 15; });
+      wcPieces.forEach(p=> p.dataset.q = '15');
     }
   }
 }
@@ -598,7 +737,6 @@ function enforceT2Minimum60(){
   const nbCh = +($('#nb_chambres')?.value || 3);
   const T = titreLogement(nbCh);
   if (T !== 'T2') return;
-
   const cont = $('#pieces');
   const pieces = Array.from(cont.querySelectorAll('.piece'));
   if (pieces.length === 0){
@@ -609,11 +747,32 @@ function refreshAllPieces(containerSel){
   document.querySelectorAll(containerSel+' .piece').forEach(p => {
     const sel = p.querySelector('select[name="type"]');
     if(!sel || !sel.value) return;
-    const q = p.querySelector('input[name="q"]');
-    q.value = (sel.value==='sdb') ? 30 : 15;
+    p.dataset.q = (sel.value==='sdb') ? '30' : '15';
+    applyPieceColor(p, sel.value);
   });
   applyT2MinimumRule();
   updateWCFlows();
+}
+
+/* ========= Sortie: libellé dépend du Ø rejet ========= */
+function updateSortieTypeOptions(){
+  const diam = String($('#rej_diam')?.value || '125');
+  const sel = $('#sortie_type');
+  if(!sel) return;
+  const current = sel.value || 'toiture';
+
+  sel.innerHTML = '';
+  const opts = [
+    {v:'toiture', t:`Toiture isolée ${diam} (5 Pa)`},
+    {v:'facade_inox', t:`Façade INOX ${diam}`},
+    {v:'facade_design', t:`Façade Design ${diam}`}
+  ];
+  opts.forEach(o=>{
+    const op=document.createElement('option');
+    op.value=o.v; op.textContent=o.t;
+    sel.appendChild(op);
+  });
+  sel.value = current;
 }
 
 /* ========= Calculs ========= */
@@ -651,30 +810,26 @@ function pdcSortie(type, diam, q){
 }
 function labelSortie(t){ return t==='toiture'?'Toiture isolée':(t==='facade_inox'?'Façade INOX':'Façade Design'); }
 
-/* ========= Validation ========= */
+/* ========= Validation finale (rapport) ========= */
 function validateBeforeReport(){
-  const mainLen = $('#main_len').value;
-  const rejLen  = $('#rej_len').value;
-  const cuiLen  = $('#cui_len').value;
+  coerceInt($('#main_len')); coerceInt($('#cui_len')); coerceInt($('#rej_len'));
 
-  if(mainLen==='' || +mainLen<0){ alert("Merci de renseigner la longueur du conduit d’extraction (étape 3)."); showStep(3); return false; }
-  if(cuiLen===''  || +cuiLen<0 ){ alert("Merci de renseigner la longueur Ø90 de la cuisine (étape 4)."); showStep(4); return false; }
-  if(rejLen===''  || +rejLen<0 ){ alert("Merci de renseigner la longueur du conduit de rejet (étape 5)."); showStep(5); return false; }
+  const mainLen = Number($('#main_len').value);
+  const cuiLen  = Number($('#cui_len').value);
+  const rejLen  = Number($('#rej_len').value);
+
+  if(!mainLen || mainLen<=0){ alert("Merci de renseigner une longueur > 0 m (étape 3)."); showStep(3); return false; }
+  if(!cuiLen  || cuiLen<=0 ){ alert("Merci de renseigner une longueur > 0 m pour la cuisine (étape 4)."); showStep(4); return false; }
+  if(!rejLen  || rejLen<=0 ){ alert("Merci de renseigner une longueur > 0 m (étape 5)."); showStep(5); return false; }
 
   const pieces = Array.from(document.querySelectorAll('#pieces .piece'));
   for(const p of pieces){
     const type = p.querySelector('select[name="type"]')?.value || '';
-    const len  = p.querySelector('input[name="len"]')?.value ?? '';
-    if(!type){
-      alert("Une pièce d’eau est incomplète : merci de choisir le type (étape 4).");
-      showStep(4);
-      return false;
-    }
-    if(len==='' || +len<0){
-      alert("Une pièce d’eau est incomplète : merci de renseigner la longueur Ø90 (étape 4).");
-      showStep(4);
-      return false;
-    }
+    const lenEl = p.querySelector('input[name="len"]');
+    coerceInt(lenEl);
+    const len  = Number(lenEl?.value ?? 0);
+    if(!type){ alert("Une pièce d’eau est incomplète : merci de choisir le type (étape 4)."); showStep(4); return false; }
+    if(!len || len<=0){ alert("Une pièce d’eau est incomplète : merci de renseigner une longueur > 0 m (étape 4)."); showStep(4); return false; }
   }
   return true;
 }
@@ -702,12 +857,15 @@ function generateReport(){
   const autres=$$('#pieces .piece').map(n=>({
     nom:n.querySelector('input[name="nom"]').value||'Pièce d’eau',
     type:n.querySelector('select[name="type"]').value,
-    q:+(n.querySelector('input[name="q"]').value||0),
+    q:+(n.dataset.q || 0),
     len:+(n.querySelector('input[name="len"]').value||0)
   }));
 
   const rej_d=+$('#rej_diam').value, rej_l=+$('#rej_len').value, rej_c45=+$('#rej_c45').value, rej_c90=+$('#rej_c90').value;
-  const sortie_type=$('#sortie_type').value, sortie_diam=+$('#sortie_diam').value;
+  const sortie_type=$('#sortie_type').value;
+
+  // Ø sortie = Ø rejet (sans afficher un champ dédié)
+  const sortie_diam = rej_d;
 
   let sumQmini=cui_q_min, sumQgrand=cui_q_max;
   autres.forEach(p=>{ sumQmini+=p.q; sumQgrand+=p.q; });
@@ -770,7 +928,7 @@ function generateReport(){
   airList=aj.liste; const sumAir=airList.reduce((s,a)=>s+a.q,0);
 
   $('#r-head-1').innerHTML = `<div><b>Installateur :</b> ${inst} (${siret}) — ${mailI}</div><div><b>Étude réalisée par :</b> ${audit}</div>`;
-  $('#r-head-2').innerHTML = `<div><b>Client :</b> ${addr} — ${mailC}<br><b>Type de bâtiment :</b> ${bat==='maison'?'Maison individuelle':'Immeuble collectif'}<br><b>Type de logement :</b> ${Tlog}</div><div><b>Date :</b> ${date} — <b>Marques :</b> Bouches=${bB||'NIBE'} ; Entrées d’air=${bE}</div>`;
+  $('#r-head-2').innerHTML = `<div><b>Client :</b> ${addr} — ${mailC}<br><b>Type de bâtiment :</b> ${bat==='maison'?'Maison individuelle':'Immeuble collectif'}<br><b>Type de logement :</b> ${Tlog}</div><div><b>Date :</b> ${date} — <b>Marques :</b> Bouches=${bB} ; Entrées d’air=${bE}</div>`;
 
   const tbody=$('#r-rows'); tbody.innerHTML='';
   rows.forEach(r=>{
@@ -783,6 +941,7 @@ function generateReport(){
                   <td class="calc">${r.det}</td>`;
     tbody.appendChild(tr);
   });
+
   const trTot=document.createElement('tr'); trTot.className='sum';
   trTot.innerHTML=`<td class="left">TOTAL — Somme des débits / PDC</td>
                    <td>${sumQmini.toFixed(0)}</td>
@@ -808,13 +967,13 @@ function generateReport(){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function onSortieTypeChange(){}
-
 /* ========= Init ========= */
 function init(){
   const d=$('#date_etude'); if(d) d.valueAsDate=new Date();
   applyCuisineDefaults();
   enforceT2Minimum60();
+  updateSortieTypeOptions();
+  bindAllStaticIntFields();
   showStep(1);
 }
 document.addEventListener('DOMContentLoaded', init);
