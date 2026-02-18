@@ -667,6 +667,26 @@
 </div>
 </div>
 
+<div class="grid-2" id="pac_block" style="margin-top:10px">
+  <div class="field">
+    <label>Modèle de pompe à chaleur</label>
+    <select id="pac_model">
+      <option value="S735-4" selected>S735-4</option>
+      <option value="S735-7">S735-7</option>
+    </select>
+    <div class="hint" id="pacHint" style="margin-top:6px; display:none"></div>
+  </div>
+  <div class="field">
+    <label>Nombre de zones</label>
+    <select id="pac_zones">
+      <option value="1" selected>1 zone</option>
+      <option value="2">2 zones</option>
+      <option value="3">3 zones</option>
+      <option value="4">4 zones</option>
+    </select>
+  </div>
+</div>
+
 <div class="nav">
 <button class="secondary" onclick="showStep(4)" type="button">Retour</button>
 <div class="actions"><button id="toReportBtn" onclick="generateReport()" type="button">Continuer</button></div>
@@ -691,7 +711,7 @@
 </div>
 <div class="report-title-wrap">
 <h2 class="report-title">Note de calcul – Réseau de ventilation (semi-rigide)</h2>
-<div class="report-sub">NIBE S735</div>
+<div id="report_sub" class="report-sub">NIBE S735</div>
 </div>
 <button class="secondary printBtn no-print" onclick="window.print()" type="button">Imprimer</button>
 </div>
@@ -763,7 +783,7 @@
           </div>
           <div>
             <h2 class="quote-title">Liste réseau ventilation NIBE</h2>
-            <div class="quote-sub">NIBE S735 – Estimation</div>
+            <div id="quote_sub" class="quote-sub">NIBE S735 – Estimation</div>
           </div>
           <div class="docinfo">
             <div><b>Date :</b> <span id="shopDocDate">—</span></div>
@@ -991,6 +1011,7 @@ function goToStep5(){
       return;
     }
   }
+  updatePacAvailability(true);
   showStep(5);
 }
 
@@ -1121,6 +1142,7 @@ function onChambresChange(){
   updateWCFlows();
   enforceT2Minimum60();
   refreshAllPieces('#pieces');
+  updatePacAvailability(true);
 }
 function applyCuisineDefaults(){
   const nb=+($('#nb_chambres')?.value||3);
@@ -1179,7 +1201,76 @@ function refreshAllPieces(containerSel){
   });
   applyT2MinimumRule();
   updateWCFlows();
+  updatePacAvailability(true);
 }
+
+/* ========= Pompe à chaleur (modèle / zones) ========= */
+function getDebitReglementaire(){
+  const qMax = Number($('#cui_q_max')?.value || 0);
+  const pieces = Array.from(document.querySelectorAll('#pieces .piece'))
+    .filter(p => (p.querySelector('select[name="type"]')?.value || '') !== '');
+  const sum = pieces.reduce((s,p)=> s + Number(p.dataset.q || 0), 0);
+  return qMax + sum;
+}
+function getDebitReglementaireMini(){
+  const qMin = Number($('#cui_q_min')?.value || 0);
+  const pieces = Array.from(document.querySelectorAll('#pieces .piece'))
+    .filter(p => (p.querySelector('select[name="type"]')?.value || '') !== '');
+  const sum = pieces.reduce((s,p)=> s + Number(p.dataset.q || 0), 0);
+  return qMin + sum;
+}
+
+function getPacModel(){
+  return String($('#pac_model')?.value || 'S735-4');
+}
+function getPacLabel(){
+  return `NIBE ${getPacModel()}`;
+}
+function getPacRef(){
+  return (getPacModel()==='S735-7') ? 'N066136' : 'N066130';
+}
+function getZonesCount(){
+  const z = parseInt($('#pac_zones')?.value || '1', 10);
+  return (Number.isFinite(z) && z>=1 && z<=4) ? z : 1;
+}
+function updatePacLabels(){
+  const label = getPacLabel();
+  const rs = $('#report_sub');
+  if(rs) rs.textContent = label;
+  const qs = $('#quote_sub');
+  if(qs) qs.textContent = `${label} – Estimation`;
+}
+function updatePacAvailability(autoFix=true){
+  const debit = getDebitReglementaireMini();
+  const modelSel = $('#pac_model');
+  const hint = $('#pacHint');
+  if(!modelSel) return;
+
+  const opt7 = Array.from(modelSel.options).find(o=>o.value==='S735-7');
+  if(opt7){
+    const allowed7 = debit >= 90;
+    opt7.disabled = !allowed7;
+    if(!allowed7 && modelSel.value==='S735-7' && autoFix){
+      modelSel.value='S735-4';
+    }
+  }
+
+  const msgs = [];
+  if(debit < 90){
+    msgs.push("Le modèle S735-7 n’est pas disponible en dessous de 90 m³/h.");
+  }
+  if(debit < 60){
+    msgs.push("Le modèle S735-4 n’est pas compatible en dessous de 60 m³/h.");
+  }
+  const msg = msgs.join(' ');
+  if(hint){
+    hint.textContent = msg;
+    hint.style.display = msg ? 'block' : 'none';
+  }
+
+  updatePacLabels();
+}
+
 
 /* ========= Sortie: libellé dépend du Ø rejet ========= */
 function updateSortieTypeOptions(){
@@ -1340,6 +1431,25 @@ function validateBeforeReport(){
     if(!type){ alert("Une pièce d’eau est incomplète : merci de choisir le type (étape 4)."); showStep(4); return false; }
     if(!len || len<=0){ alert("Une pièce d’eau est incomplète : merci de renseigner une longueur > 0 m (étape 4)."); showStep(4); return false; }
   }
+  // Validation modèle PAC vs débit réglementaire
+  updatePacAvailability(true);
+  const debitReg = getDebitReglementaireMini();
+  let pac = getPacModel();
+
+  // S735-7 : non sélectionnable si < 90 m³/h (on force S735-4 si jamais)
+  if(pac==='S735-7' && debitReg < 90){
+    const pm = $('#pac_model');
+    if(pm) pm.value = 'S735-4';
+    updatePacLabels();
+    pac = 'S735-4';
+  }
+
+  // S735-4 : garde-fou (rare) si < 60 m³/h
+  if(pac==='S735-4' && debitReg < 60){
+    alert("Le modèle S735-4 n’est pas disponible en dessous de 60 m³/h.");
+    showStep(5);
+    return false;
+  }
   return true;
 }
 
@@ -1347,6 +1457,7 @@ function validateBeforeReport(){
 function generateReport(){
   try{
   if(!validateBeforeReport()) return;
+  updatePacLabels();
 
   enforceT2Minimum60();
   applyT2MinimumRule();
@@ -1494,6 +1605,17 @@ function init(){
   const tt=$('#toiture_type'); if(tt) tt.addEventListener('change', applyToiturePente);
   toggleToitureFields();
   bindAllStaticIntFields();
+
+  // Pompe à chaleur
+  const pm = $('#pac_model');
+  if(pm){
+    pm.addEventListener('change', ()=>{ updatePacAvailability(true); if(currentStep===7) updateShoppingList(); });
+  }
+  const pz = $('#pac_zones');
+  if(pz){
+    pz.addEventListener('change', ()=>{ updatePacLabels(); if(currentStep===7) updateShoppingList(); });
+  }
+  updatePacAvailability(true);
   showStep(1);
 }
 document.addEventListener('DOMContentLoaded', init);
@@ -1516,6 +1638,15 @@ const NRNSL_FALLBACK_PHOTO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB4AA
 IMAGE_MAP['NRNSL160']=NRNSL_FALLBACK_PHOTO;
 IMAGE_MAP['NRNSL125']=NRNSL_FALLBACK_PHOTO;
 
+// Ajouts PAC + kits zones
+PRICE_MAP['N066130'] = {lib: "PAC intérieure triple services sur air extrait 4kW, ballon inox, Série S, 230V", pu: 12494.0};
+PRICE_MAP['N066136'] = {lib: "PAC intérieure triple services sur air extrait 7kW, ballon inox, Série S, 230V", pu: 13796.0};
+PRICE_MAP['N067288'] = {lib: "Kit circuit mélangé supplémentaire >80m², R. cuivre 22 mm", pu: 1204.0};
+
+IMAGE_MAP['N066130'] = "https://atita.maps-system.com/media/1/350005.png?token=da99d6f4593a6f2f411b7e5bc188cfe5210f90ea";
+IMAGE_MAP['N066136'] = "https://atita.maps-system.com/media/1/350005.png?token=da99d6f4593a6f2f411b7e5bc188cfe5210f90ea";
+IMAGE_MAP['N067288'] = "https://atita.maps-system.com/media/1/350149.png?token=da99d6f4593a6f2f411b7e5bc188cfe5210f90ea";
+
 function fmtEUR(v){
   if(v===null || v===undefined || v==='') return '—';
   const n = Number(v);
@@ -1534,11 +1665,16 @@ function getKitchenRef(qMin, qMax){
   return map[key] || null;
 }
 
-function addItem(acc, ref, qty, note=null){
+function addItem(acc, ref, qty, note=null, prio=0){
   if(!qty || qty<=0) return;
-  const k = ref || ('NOTE:'+note);
-  if(!acc[k]) acc[k] = {ref:ref||'', note:note||'', qty:0};
+  const hasRef = !!ref;
+  const k = hasRef ? ref : ('NOTE:'+note);
+  if(!hasRef && prio===0) prio = 999; // notes en bas
+  if(!acc[k]) acc[k]={ref:ref||'', note:note||'', qty:0, prio:prio};
   acc[k].qty += qty;
+  // conserver la priorité la plus haute (plus petit = plus haut)
+  if(acc[k].prio===undefined || acc[k].prio===null) acc[k].prio = prio;
+  acc[k].prio = Math.min(acc[k].prio, prio);
 }
 
 function splitEntreeAir(q){
@@ -1570,6 +1706,14 @@ function generateShoppingList(){
 
   const acc={};
 
+
+  // Pompe à chaleur + kits zones (en tête de liste)
+  const pacRef = getPacRef();
+  addItem(acc, pacRef, 1, null, -100);
+
+  const zones = getZonesCount();
+  const kitQty = Math.max(0, zones - 1);
+  addItem(acc, 'N067288', kitQty, null, -90);
   const qMin=Number($('#cui_q_min')?.value||0);
   const qMax=Number($('#cui_q_max')?.value||0);
   const kRef=getKitchenRef(qMin,qMax);
@@ -1963,10 +2107,16 @@ function renderShoppingList(items){
   body.innerHTML='';
   let total=0;
 
-  items.sort((a,b)=>{
-    if(!a.ref && b.ref) return 1;
-    if(a.ref && !b.ref) return -1;
-    return (a.ref||a.note).localeCompare(b.ref||b.note,'fr');
+    items.sort((a,b)=>{
+    const pa = (a.prio ?? 0);
+    const pb = (b.prio ?? 0);
+    if(pa !== pb) return pa - pb;
+
+    const ar = a.ref || '';
+    const br = b.ref || '';
+    if(!ar && br) return 1;
+    if(ar && !br) return -1;
+    return (ar || a.note).localeCompare(br || b.note,'fr');
   });
 
   items.forEach(it=>{
