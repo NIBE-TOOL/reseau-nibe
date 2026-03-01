@@ -247,6 +247,12 @@
   .img-choice span{font-weight:600;text-align:center}
   .img-choice:has(input:checked){outline:2px solid var(--brand);border-color:var(--brand)}
   .hint{font-size:12px;color:#6b7280}
+.vel-indicator{font-size:12px;font-weight:800;margin-top:6px;line-height:1.2}
+.vel-green{color:#0b7a34}
+.vel-orange{color:#b35a00}
+.vel-red{color:#b00020}
+.vel-blackonred{background:#d50000;color:#000;padding:2px 6px;border-radius:4px;display:inline-block}
+
 
 
   /* Page Liste réseau ventilation NIBE (écran) */
@@ -503,7 +509,7 @@
 <div class="step"><span id="p7" style="width:0%"></span></div>
 </div>
 <div aria-hidden="true" class="labels">
-<span>Admin</span><span>Logement</span><span>Extraction</span><span>Pièces d’eau</span><span>Rejet</span><span>Rapport</span><span>Liste</span>
+<span>Admin</span><span>Logement</span><span>Pièces d’eau</span><span>Extraction</span><span>Rejet</span><span>Rapport</span><span>Liste</span>
 </div>
 <!-- ÉTAPE 1 : ADMIN -->
 <div class="card" data-step="1">
@@ -561,9 +567,33 @@
 </div>
 </div>
 </div>
-<!-- ÉTAPE 3 : EXTRACTION -->
-<div class="card" data-step="3" style="display:none">
-<h3>3) Conduit d’extraction</h3>
+<!-- ÉTAPE 3 : PIÈCES D'EAU -->
+<div class="card zebra" data-step="3" style="display:none">
+<h3>3) Pièces d’eau (Ø90 semi-rigide)</h3>
+<!-- (Débits invisibles mais conservés pour le calcul) -->
+<input id="cui_q_min" type="hidden"/>
+<input id="cui_q_max" type="hidden"/>
+<div class="piece piece--cuisine" id="piece_cuisine">
+<strong>CUISINE (2×Ø90)</strong>
+<div class="grid-2" style="margin-top:8px">
+<div class="field"><label>Longueur Ø90 (m – par gaine)</label>
+<input id="cui_len" inputmode="numeric" min="0" step="1" type="number" value="0"/>
+</div>
+<div aria-hidden="true" class="field"><label> </label><input readonly="" style="opacity:0" type="text" value=" "/></div>
+</div>
+</div>
+<div id="pieces"></div>
+<div class="actions" style="margin-top:10px">
+<button class="secondary" onclick="addPiece()" type="button">+ Ajouter une pièce d'eau</button>
+</div>
+<div class="nav">
+<button class="secondary" onclick="showStep(2)" type="button">Retour</button>
+<div class="actions"><button onclick="goToStep4()" type="button">Continuer</button></div>
+</div>
+</div>
+<!-- ÉTAPE 4 : EXTRACTION -->
+<div class="card" data-step="4" style="display:none">
+<h3>4) Conduit d’extraction</h3>
 <div class="flow">Répartiteur <span class="arrow">➜</span> S735</div>
 <div class="field" style="margin-top:10px">
 <label>Type de raccordement (alimentation)</label>
@@ -583,7 +613,8 @@
 
 <div class="grid-4" style="margin-top:10px">
 <div class="field"><label>Diamètre (mm)</label>
-<select id="main_diam"><option>125</option><option selected="">160</option><option>200</option></select>
+<select id="main_diam" onchange="updateVelocityIndicators()"><option>125</option><option selected="">160</option><option>200</option></select>
+<div id="vel_main" class="vel-indicator"></div>
 </div>
 <!-- ✅ entiers + défaut 0 + mètre par mètre -->
 <div class="field"><label>Longueur droite (m)</label>
@@ -592,30 +623,6 @@
 <!-- ✅ 90° à gauche / 45° à droite -->
 <div class="field"><label>Coudes 90°</label><input id="main_c90" inputmode="numeric" min="0" step="1" type="number" value="2"/></div>
 <div class="field"><label>Coudes 45°</label><input id="main_c45" inputmode="numeric" min="0" step="1" type="number" value="0"/></div>
-</div>
-<div class="nav">
-<button class="secondary" onclick="showStep(2)" type="button">Retour</button>
-<div class="actions"><button onclick="goToStep4()" type="button">Continuer</button></div>
-</div>
-</div>
-<!-- ÉTAPE 4 : PIÈCES D'EAU -->
-<div class="card zebra" data-step="4" style="display:none">
-<h3>4) Pièces d’eau (Ø90 semi-rigide)</h3>
-<!-- (Débits invisibles mais conservés pour le calcul) -->
-<input id="cui_q_min" type="hidden"/>
-<input id="cui_q_max" type="hidden"/>
-<div class="piece piece--cuisine" id="piece_cuisine">
-<strong>CUISINE (2×Ø90)</strong>
-<div class="grid-2" style="margin-top:8px">
-<div class="field"><label>Longueur Ø90 (m – par gaine)</label>
-<input id="cui_len" inputmode="numeric" min="0" step="1" type="number" value="0"/>
-</div>
-<div aria-hidden="true" class="field"><label> </label><input readonly="" style="opacity:0" type="text" value=" "/></div>
-</div>
-</div>
-<div id="pieces"></div>
-<div class="actions" style="margin-top:10px">
-<button class="secondary" onclick="addPiece()" type="button">+ Ajouter une pièce d'eau</button>
 </div>
 <div class="nav">
 <button class="secondary" onclick="showStep(3)" type="button">Retour</button>
@@ -628,7 +635,8 @@
 <div class="flow">S735 <span class="arrow">➜</span> Extérieur</div>
 <div class="grid-4" style="margin-top:10px">
 <div class="field"><label>Diamètre (mm)</label>
-<select id="rej_diam" onchange="updateSortieTypeOptions()"><option>125</option><option selected="">160</option><option>200</option></select>
+<select id="rej_diam" onchange="updateSortieTypeOptions();updateVelocityIndicators()"><option>125</option><option selected="">160</option><option>200</option></select>
+<div id="vel_rej" class="vel-indicator"></div>
 </div>
 <!-- ✅ entiers + défaut 0 + mètre par mètre -->
 <div class="field"><label>Longueur droite (m)</label>
@@ -697,7 +705,8 @@
 <div class="row" style="justify-content:space-between;flex-wrap:wrap">
 <div class="hint">Le rapport est affiché ci-dessous (impression possible).</div>
 <div class="actions">
-<button class="secondary" onclick="showStep(5)" type="button">Retour</button><button class="secondary" onclick="generateShoppingList()" type="button">Liste réseau de ventilation</button>
+<button class="secondary" onclick="showStep(5)" type="button">Retour</button><button class="secondary" onclick="generateShoppingList()" type="button">DEVIS / Liste réseau de ventilation</button>
+<button class="secondary" type="button" onclick="window.open('https://nibe-tool.github.io/note/','_blank')">Note de dimensionnement NIBE</button>
 </div>
 </div>
 </div>
@@ -981,19 +990,11 @@ function bindPieceLenIntField(piece){
 
 /* ========= Bloquants navigation (longueur > 0) ========= */
 function goToStep4(){
-  coerceInt($('#main_len'));
-  const v = Number($('#main_len').value);
-  if(!v || v<=0){
-    alert("Merci de renseigner une longueur > 0 m pour le conduit d’extraction (étape 3).");
-    return;
-  }
-  showStep(4);
-}
-function goToStep5(){
+  // Étape 3 (Pièces d’eau) ➜ Étape 4 (Conduit d’extraction)
   coerceInt($('#cui_len'));
-  const cuiLen = Number($('#cui_len').value);
+  const cuiLen = Number($('#cui_len')?.value || 0);
   if(!cuiLen || cuiLen<=0){
-    alert("Merci de renseigner une longueur > 0 m pour la cuisine (étape 4).");
+    alert("Merci de renseigner une longueur > 0 m pour la cuisine (étape 3).");
     return;
   }
   const pieces = Array.from(document.querySelectorAll('#pieces .piece'));
@@ -1003,15 +1004,28 @@ function goToStep5(){
     coerceInt(lenEl);
     const len = Number(lenEl?.value ?? 0);
     if(!type){
-      alert("Une pièce d’eau est incomplète : merci de choisir le type (étape 4).");
+      alert("Une pièce d’eau est incomplète : merci de choisir le type (étape 3).");
       return;
     }
     if(!len || len<=0){
-      alert("Une pièce d’eau est incomplète : merci de renseigner une longueur > 0 m (étape 4).");
+      alert("Une pièce d’eau est incomplète : merci de renseigner une longueur > 0 m (étape 3).");
       return;
     }
   }
   updatePacAvailability(true);
+  updateVelocityIndicators();
+  showStep(4);
+}
+function goToStep5(){
+  // Étape 4 (Conduit d’extraction) ➜ Étape 5 (Conduit de rejet)
+  coerceInt($('#main_len'));
+  const v = Number($('#main_len')?.value || 0);
+  if(!v || v<=0){
+    alert("Merci de renseigner une longueur > 0 m pour le conduit d’extraction (étape 4).");
+    return;
+  }
+  updatePacAvailability(true);
+  updateVelocityIndicators();
   showStep(5);
 }
 
@@ -1220,6 +1234,39 @@ function getDebitReglementaireMini(){
   return qMin + sum;
 }
 
+/* ========= Indicateur vitesse d’air ========= */
+function airVelocityFromDebitMini(diamMm){
+  const d = Number(diamMm);
+  if(!Number.isFinite(d) || d<=0) return 0;
+  const debit = getDebitReglementaireMini(); // m³/h
+  const Q = debit / 3600.0; // m³/s
+  const A = Math.PI * Math.pow(d/1000.0, 2) / 4.0; // m²
+  if(!A) return 0;
+  return Q / A; // m/s
+}
+function velocityClass(v){
+  if(v <= 2.6) return 'vel-green';
+  if(v <= 2.9) return 'vel-orange';
+  if(v <= 3.5) return 'vel-red';
+  return 'vel-blackonred';
+}
+function setVel(el, diam){
+  if(!el) return;
+  const v = airVelocityFromDebitMini(diam);
+  if(!v){
+    el.textContent = '';
+    el.className = 'vel-indicator';
+    return;
+  }
+  const vv = Math.round(v*100)/100;
+  el.textContent = `Vitesse d’air : ${vv.toFixed(2).replace('.',',')} m/s`;
+  el.className = 'vel-indicator ' + velocityClass(v);
+}
+function updateVelocityIndicators(){
+  setVel(document.getElementById('vel_main'), document.getElementById('main_diam')?.value);
+  setVel(document.getElementById('vel_rej'), document.getElementById('rej_diam')?.value);
+}
+
 function getPacModel(){
   return String($('#pac_model')?.value || 'S735-4');
 }
@@ -1269,6 +1316,7 @@ function updatePacAvailability(autoFix=true){
   }
 
   updatePacLabels();
+  updateVelocityIndicators();
 }
 
 
