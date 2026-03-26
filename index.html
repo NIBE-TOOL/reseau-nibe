@@ -577,7 +577,7 @@
 <strong>CUISINE (2×Ø90)</strong>
 <div class="grid-2" style="margin-top:8px">
 <div class="field"><label>Longueur Ø90 (m – par gaine)</label>
-<input id="cui_len" inputmode="numeric" min="0" step="1" type="number" value="0"/>
+<input id="cui_len" inputmode="numeric" min="0" step="1" type="number" value="3"/>
 </div>
 <div aria-hidden="true" class="field"><label> </label><input readonly="" style="opacity:0" type="text" value=" "/></div>
 </div>
@@ -618,7 +618,7 @@
 </div>
 <!-- ✅ entiers + défaut 0 + mètre par mètre -->
 <div class="field"><label>Longueur droite (m)</label>
-<input id="main_len" inputmode="numeric" min="0" step="1" type="number" value="0"/>
+<input id="main_len" inputmode="numeric" min="0" step="1" type="number" value="1"/>
 </div>
 <!-- ✅ 90° à gauche / 45° à droite -->
 <div class="field"><label>Coudes 90°</label><input id="main_c90" inputmode="numeric" min="0" step="1" type="number" value="2"/></div>
@@ -640,7 +640,7 @@
 </div>
 <!-- ✅ entiers + défaut 0 + mètre par mètre -->
 <div class="field"><label>Longueur droite (m)</label>
-<input id="rej_len" inputmode="numeric" min="0" step="1" type="number" value="0"/>
+<input id="rej_len" inputmode="numeric" min="0" step="1" type="number" value="1"/>
 </div>
 <!-- ✅ 90° à gauche / 45° à droite -->
 <div class="field"><label>Coudes 90°</label><input id="rej_c90" inputmode="numeric" min="0" step="1" type="number" value="1"/></div>
@@ -913,7 +913,7 @@ function ajusterEntreesAir(liste, besoinMini){
   }
   if(sum()<besoinMini){
     const sej=liste.find(a=>a.type==='sej');
-    if(sej&&sej.q<90){sej.q=90; note+='Séjour → 2×45=90 m³/h. '; modif=true;}
+    if(sej&&sej.q<60){sej.q=60; note+='Séjour → 2×30=60 m³/h. '; modif=true;}
   }
   return {liste, note:note.trim(), modif};
 }
@@ -1049,7 +1049,7 @@ function setPieceEnabled(piece, enabled){
   len.disabled = !enabled;
   if(!enabled){
     nom.value = '';
-    len.value = '0';
+    len.value = '3';
     piece.dataset.q = '';
   }
 }
@@ -1089,7 +1089,7 @@ function makePieceRow(){
         <input name="nom" disabled placeholder="Auto après choix du type">
       </div>
       <div class="field"><label>Longueur Ø90 (m)</label>
-        <input name="len" type="number" min="0" step="1" value="0" inputmode="numeric" required disabled>
+        <input name="len" type="number" min="0" step="1" value="3" inputmode="numeric" required disabled>
       </div>
     </div>
     <div class="actions" style="margin-top:8px">
