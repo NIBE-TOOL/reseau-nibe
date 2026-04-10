@@ -748,6 +748,43 @@
     </select>
   </div>
 </div>
+<div id="thermostat_options_block" style="margin-top:10px">
+  <label style="display:block;font-weight:600;font-size:13px;margin-bottom:6px">Option thermostat</label>
+  <div class="grid-2" id="thermostat_zone_grid">
+    <div class="field thermostat-zone-field" data-zone="1">
+      <label>Zone 1</label>
+      <select id="thermo_zone_1">
+        <option value="none" selected>Aucun</option>
+        <option value="tactile">Commande tactile</option>
+        <option value="wifi">Thermostat Wifi</option>
+      </select>
+    </div>
+    <div class="field thermostat-zone-field" data-zone="2" style="display:none">
+      <label>Zone 2</label>
+      <select id="thermo_zone_2">
+        <option value="none" selected>Aucun</option>
+        <option value="tactile">Commande tactile</option>
+        <option value="wifi">Thermostat Wifi</option>
+      </select>
+    </div>
+    <div class="field thermostat-zone-field" data-zone="3" style="display:none">
+      <label>Zone 3</label>
+      <select id="thermo_zone_3">
+        <option value="none" selected>Aucun</option>
+        <option value="tactile">Commande tactile</option>
+        <option value="wifi">Thermostat Wifi</option>
+      </select>
+    </div>
+    <div class="field thermostat-zone-field" data-zone="4" style="display:none">
+      <label>Zone 4</label>
+      <select id="thermo_zone_4">
+        <option value="none" selected>Aucun</option>
+        <option value="tactile">Commande tactile</option>
+        <option value="wifi">Thermostat Wifi</option>
+      </select>
+    </div>
+  </div>
+</div>
 <div class="field" id="bouche_model_block" style="margin-top:10px">
   <label>Modèle de bouche</label>
   <select id="bouche_model">
@@ -1376,8 +1413,8 @@ function airVelocityFromDebitMini(diamMm){
   return Q / A; // m/s
 }
 function velocityClass(v){
-  if(v <= 2.6) return 'vel-green';
-  if(v <= 2.9) return 'vel-orange';
+  if(v <= 3.0) return 'vel-green';
+  if(v <= 3.25) return 'vel-orange';
   if(v <= 3.5) return 'vel-red';
   return 'vel-blackonred';
 }
@@ -1410,6 +1447,16 @@ function getPacRef(){
 function getZonesCount(){
   const z = parseInt($('#pac_zones')?.value || '1', 10);
   return (Number.isFinite(z) && z>=1 && z<=4) ? z : 1;
+}
+function getThermostatZoneSelection(zone){
+  return String($('#thermo_zone_' + zone)?.value || 'none');
+}
+function updateThermostatZoneFields(){
+  const zones = getZonesCount();
+  for(let i=1;i<=4;i++){
+    const field = document.querySelector('.thermostat-zone-field[data-zone="' + i + '"]');
+    if(field) field.style.display = (i <= zones) ? '' : 'none';
+  }
 }
 function updatePacLabels(){
   const label = getPacLabel();
@@ -1845,13 +1892,20 @@ function init(){
   }
   const pz = $('#pac_zones');
   if(pz){
-    pz.addEventListener('change', ()=>{ updatePacLabels(); if(currentStep===7) updateShoppingList(); });
+    pz.addEventListener('change', ()=>{ updatePacLabels(); updateThermostatZoneFields(); if(currentStep===7) updateShoppingList(); });
   }
+  [1,2,3,4].forEach(i=>{
+    const el = $('#thermo_zone_' + i);
+    if(el){
+      el.addEventListener('change', ()=>{ if(currentStep===7) updateShoppingList(); });
+    }
+  });
   const bm = $('#bouche_model');
   if(bm){
     bm.addEventListener('change', ()=>{ if(currentStep===7) updateShoppingList(); });
   }
   onHousingModeChange();
+  updateThermostatZoneFields();
   updateSortieGallery();
   updatePacAvailability(true);
   showStep(1);
@@ -1890,10 +1944,16 @@ IMAGE_MAP['NRNSL125']=NRNSL_FALLBACK_PHOTO;
 PRICE_MAP['N066130'] = {lib: "PAC intérieure triple services sur air extrait 4kW, ballon inox, Série S, 230V", pu: 12494.0};
 PRICE_MAP['N066136'] = {lib: "PAC intérieure triple services sur air extrait 7kW, ballon inox, Série S, 230V", pu: 13796.0};
 PRICE_MAP['N067288'] = {lib: "Kit circuit mélangé supplémentaire >80m², R. cuivre 22 mm", pu: 1204.0};
+PRICE_MAP['N067650'] = {lib: "Commande tactile RMU S40", pu: 339.0};
+PRICE_MAP['N067724'] = {lib: "Thermostat Wifi ROT 10", pu: 100.0};
+PRICE_MAP['N067726'] = {lib: "Prise répéteur Wifi RPP 10", pu: 62.0};
 
 IMAGE_MAP['N066130'] = "https://assetstore.nibe.se/hcms/v2.3/entity/dam/849890/storage/ODQ5ODkwLzAvd2ViLTQ0M3gzODgtcG5n";
 IMAGE_MAP['N066136'] = "https://assetstore.nibe.se/hcms/v2.3/entity/dam/849890/storage/ODQ5ODkwLzAvd2ViLTQ0M3gzODgtcG5n";
 IMAGE_MAP['N067288'] = "https://atita.maps-system.com/media/1/350149.png?token=da99d6f4593a6f2f411b7e5bc188cfe5210f90ea";
+IMAGE_MAP['N067650'] = "https://atita.maps-system.com/media/1/350113.jpeg?token=da99d6f4593a6f2f411b7e5bc188cfe5210f90ea";
+IMAGE_MAP['N067724'] = "https://atita.maps-system.com/media/1/350133.png?token=da99d6f4593a6f2f411b7e5bc188cfe5210f90ea";
+IMAGE_MAP['N067726'] = "https://atita.maps-system.com/media/1/350198.jpg?token=da99d6f4593a6f2f411b7e5bc188cfe5210f90ea";
 
 function fmtEUR(v){
   if(v===null || v===undefined || v==='') return '—';
@@ -1964,6 +2024,22 @@ function generateShoppingList(){
   const zones = getZonesCount();
   const kitQty = Math.max(0, zones - 1);
   addItem(acc, 'N067288', kitQty, null, -90);
+
+  let tactileQty = 0;
+  let wifiQty = 0;
+  for(let i=1;i<=zones;i++){
+    const opt = getThermostatZoneSelection(i);
+    if(opt==='tactile') tactileQty += 1;
+    else if(opt==='wifi') wifiQty += 1;
+  }
+  if(tactileQty){
+    addItem(acc, 'N067650', tactileQty, null, -85);
+  }
+  if(wifiQty){
+    addItem(acc, 'N067724', wifiQty, null, -84);
+    addItem(acc, 'N067726', wifiQty, null, -83);
+  }
+
   const qMin=Number($('#cui_q_min')?.value||0);
   const qMax=Number($('#cui_q_max')?.value||0);
   const kRef=getKitchenRef(qMin,qMax);
